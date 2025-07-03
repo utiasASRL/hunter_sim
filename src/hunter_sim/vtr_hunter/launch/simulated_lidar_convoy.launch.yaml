@@ -12,7 +12,7 @@ windows:
       - source ${VTRSRC}/main/install/setup.bash
       - source ${VTRROOT}/hunter_sim/install/setup.bash
     panes:
-      - ros2 run vtr_hunter start_convoy_repeat
+      - ros2 run vtr_hunter start_convoy_repeat && ros2 topic echo /leader/vtr/mpc_prediction
       - cd $VTRDATA/gazebo_convoy && ros2 bag record /robot1/cmd_vel /robot2/cmd_vel /leader/vtr/mpc_prediction /leader/vtr/odometry /follower/vtr/mpc_prediction /follower/vtr/odometry
   - window_name: leader_vtr_navigation_system
     layout: main-horizontal
@@ -20,7 +20,7 @@ windows:
       - source ${VTRSRC}/main/install/setup.bash
     panes:
       - >
-        ROBOT_NAME=leader ros2 launch vtr_navigation vtr.launch.py
+        ROBOT_NAME=leader ros2 launch vtr_navigation vtr_sim.launch.py
         base_params:=${VTRROOT}/hunter_sim/src/hunter_sim/vtr_hunter/config/lidar_hunter_leader.yaml
         start_new_graph:=false
         use_sim_time:=true
@@ -34,7 +34,7 @@ windows:
       - source ${VTRSRC}/main/install/setup.bash
     panes:
       - >
-        ROBOT_NAME=follower ros2 launch vtr_navigation vtr.launch.py
+        ROBOT_NAME=follower ros2 launch vtr_navigation vtr_sim.launch.py
         base_params:=${VTRROOT}/hunter_sim/src/hunter_sim/vtr_hunter/config/lidar_hunter_follower.yaml
         start_new_graph:=false
         use_sim_time:=true
