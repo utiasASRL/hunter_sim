@@ -319,37 +319,46 @@ def generate_launch_description():
   # ld.add_action(start_dummy_sensors)
   ld.add_action(start_rviz_cmd)
 
-  # ROS-Gazebo bridge for LiDAR sensor data - all three robots
+    # ROS-Gazebo bridge for LiDAR sensor data and steering angle for all three robots
   bridge_cmd = ExecuteProcess(
     cmd=[
-      'ros2', 'run', 'ros_gz_bridge', 'parameter_bridge',
-      # Robot 1 PointCloud2
-      '/world/default/model/robot1/link/base_link/sensor/laser/scan/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked',
-      # Robot 2 PointCloud2  
-      '/world/default/model/robot2/link/base_link/sensor/laser/scan/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked',
-      # Robot 3 PointCloud2
-      '/world/default/model/robot3/link/base_link/sensor/laser/scan/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked',
-      # Robot 1 cmd_vel
-      '/model/robot1/cmd_vel@geometry_msgs/msg/Twist@gz.msgs.Twist',
-      # Robot 2 cmd_vel
-      '/model/robot2/cmd_vel@geometry_msgs/msg/Twist@gz.msgs.Twist',
-      # Robot 3 cmd_vel
-      '/model/robot3/cmd_vel@geometry_msgs/msg/Twist@gz.msgs.Twist',
-      # Clock for simulation time
-      '/clock@rosgraph_msgs/msg/Clock@gz.msgs.Clock',
-      '--ros-args',
-      # Remappings for all three robots
-      '-r', '/world/default/model/robot1/link/base_link/sensor/laser/scan/points:=/robot1/scan/points',
-      '-r', '/world/default/model/robot2/link/base_link/sensor/laser/scan/points:=/robot2/scan/points', 
-      '-r', '/world/default/model/robot3/link/base_link/sensor/laser/scan/points:=/robot3/scan/points',
-      # Remap cmd_vel topics
-      '-r', '/model/robot1/cmd_vel:=/robot1/cmd_vel',
-      '-r', '/model/robot2/cmd_vel:=/robot2/cmd_vel',
-      '-r', '/model/robot3/cmd_vel:=/robot3/cmd_vel'
+    'ros2', 'run', 'ros_gz_bridge', 'parameter_bridge',
+    # Robot 1 PointCloud2
+    '/world/default/model/robot1/link/base_link/sensor/laser/scan/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked',
+    # Robot 2 PointCloud2  
+    '/world/default/model/robot2/link/base_link/sensor/laser/scan/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked',
+    # Robot 3 PointCloud2
+    '/world/default/model/robot3/link/base_link/sensor/laser/scan/points@sensor_msgs/msg/PointCloudPacked',
+    # Robot 1 cmd_vel
+    '/model/robot1/cmd_vel@geometry_msgs/msg/Twist@gz.msgs.Twist',
+    # Robot 2 cmd_vel
+    '/model/robot2/cmd_vel@geometry_msgs/msg/Twist@gz.msgs.Twist',
+    # Robot 3 cmd_vel
+    '/model/robot3/cmd_vel@geometry_msgs/msg/Twist@gz.msgs.Twist',
+    # Robot 1 steer_angle (as gazebo double)
+    '/model/robot1/steer_angle@std_msgs/msg/Float64@gz.msgs.Double',
+    # Robot 2 steer_angle
+    '/model/robot2/steer_angle@std_msgs/msg/Float64@gz.msgs.Double',
+    # Robot 3 steer_angle
+    '/model/robot3/steer_angle@std_msgs/msg/Float64@gz.msgs.Double',
+    # Clock for simulation time
+    '/clock@rosgraph_msgs/msg/Clock@gz.msgs.Clock',
+    '--ros-args',
+    # Remappings for all three robots
+    '-r', '/world/default/model/robot1/link/base_link/sensor/laser/scan/points:=/robot1/scan/points',
+    '-r', '/world/default/model/robot2/link/base_link/sensor/laser/scan/points:=/robot2/scan/points', 
+    '-r', '/world/default/model/robot3/link/base_link/sensor/laser/scan/points:=/robot3/scan/points',
+    # Remap cmd_vel topics
+    '-r', '/model/robot1/cmd_vel:=/robot1/cmd_vel',
+    '-r', '/model/robot2/cmd_vel:=/robot2/cmd_vel',
+    '-r', '/model/robot3/cmd_vel:=/robot3/cmd_vel',
+    # Remap steer_angle topics
+    '-r', '/model/robot1/steer_angle:=/robot1/steer_angle',
+    '-r', '/model/robot2/steer_angle:=/robot2/steer_angle',
+    '-r', '/model/robot3/steer_angle:=/robot3/steer_angle'
     ],
     output='screen'
   )
-  
   ld.add_action(bridge_cmd)
  
   return ld
