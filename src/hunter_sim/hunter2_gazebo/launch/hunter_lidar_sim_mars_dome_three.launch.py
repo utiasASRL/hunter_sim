@@ -44,7 +44,7 @@ def generate_launch_description():
   world_path = os.path.join(FindPackageShare(package='hunter2_gazebo').find('hunter2_gazebo'), world_file_path)
   
   gazebo_models_path = os.path.join(pkg_share, gazebo_models_path)
-  os.environ["IGN_GAZEBO_RESOURCE_PATH"] = gazebo_models_path
+  os.environ["GZ_SIM_RESOURCE_PATH"] = gazebo_models_path  # if using models specifically
  
   # Launch configuration variables specific to simulation
   use_sim_time = LaunchConfiguration('use_sim_time', default='true')
@@ -140,7 +140,7 @@ def generate_launch_description():
  
   # Start Gazebo server - with -r flag to start running (not paused)
   start_ign_gazebo = ExecuteProcess(
-    cmd=['ign', 'gazebo', '-r', LaunchConfiguration('world')],
+    cmd=['gz', 'sim', '-r', LaunchConfiguration('world')],
     condition=IfCondition(PythonExpression([use_simulator, ' and not ', headless])),
     output='screen'
   )
