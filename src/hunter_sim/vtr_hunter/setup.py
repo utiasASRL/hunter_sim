@@ -21,7 +21,8 @@ setup(
     entry_points={
         'console_scripts': [
             'start_convoy_repeat = vtr_hunter.start_convoy_repeat:main',
-            'start_convoy_repeat_three = vtr_hunter.start_convoy_repeat_three:main'
+            'start_convoy_repeat_three = vtr_hunter.start_convoy_repeat_three:main',
+            'command_mapper = vtr_hunter.command_mapper:main'
         ],
     },
 )
