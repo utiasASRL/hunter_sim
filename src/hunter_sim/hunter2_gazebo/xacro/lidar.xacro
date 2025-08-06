@@ -31,7 +31,7 @@
     </link>
 
 <gazebo reference="laser_frame">
-    <material>Gazebo/Red</material>
+    <material>Gazebo/Grey</material>
     <sensor name="laser" type="gpu_ray">
     <pose> 0 0 0 0 0 0 </pose>
     <visualize>false</visualize>

@@ -341,6 +341,12 @@ def generate_launch_description():
     '/model/robot2/steer_angle@std_msgs/msg/Float64@gz.msgs.Double',
     # Robot 3 steer_angle
     '/model/robot3/steer_angle@std_msgs/msg/Float64@gz.msgs.Double',
+    # Robot 1 wheel velocity (as gazebo double)
+    '/model/robot1/wheel_velocity@std_msgs/msg/Float64@gz.msgs.Double',
+    # Robot 2 wheel velocity
+    '/model/robot2/wheel_velocity@std_msgs/msg/Float64@gz.msgs.Double',
+    # Robot 3 wheel velocity
+    '/model/robot3/wheel_velocity@std_msgs/msg/Float64@gz.msgs.Double',
     # Clock for simulation time
     '/clock@rosgraph_msgs/msg/Clock@gz.msgs.Clock',
     '--ros-args',
@@ -355,7 +361,11 @@ def generate_launch_description():
     # Remap steer_angle topics
     '-r', '/model/robot1/steer_angle:=/robot1/steer_angle',
     '-r', '/model/robot2/steer_angle:=/robot2/steer_angle',
-    '-r', '/model/robot3/steer_angle:=/robot3/steer_angle'
+    '-r', '/model/robot3/steer_angle:=/robot3/steer_angle',
+    # Remap wheel_velocity topics
+    '-r', '/model/robot1/wheel_velocity:=/robot1/wheel_velocity',
+    '-r', '/model/robot2/wheel_velocity:=/robot2/wheel_velocity',
+    '-r', '/model/robot3/wheel_velocity:=/robot3/wheel_velocity'
     ],
     output='screen'
   )
