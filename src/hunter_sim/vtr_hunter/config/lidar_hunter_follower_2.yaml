@@ -245,33 +245,46 @@
         window_size: 3
     
     path_planning:
-      type: cbit
+      type: bicycle_mpc
       control_period: 100 # ms
+
       speed_scheduler:
         planar_curv_weight: 0.0
         profile_curv_weight: 0.0 
         eop_weight: 1.0
         min_vel: 0.5
-      speed_scheduler:
-        planar_curv_weight: 0.0
-        profile_curv_weight: 0.0 
-        eop_weight: 1.0
-        min_vel: 0.5
-      follow_distance: 2.0
-      distance_margin: 100.0
-      leader_namespace: /leader
-      waypoint_selection: "arclength" # leader_vel, euclidean, euclideanv2, arclength
       mpc:
         # Controller Params
-        extrapolate_robot_pose: false
+        extrapolate_robot_pose: true
         mpc_verbosity: false
-        forward_vel: 1.0
-        max_lin_vel: 1.5
-        max_ang_vel: 1.0
-        max_ang_acc: 5.0
-        ang_alpha: 0.811
+        forward_vel: 0.75
+        max_lin_vel: 1.5 # Note: This is set to 2.0 in the driver code currently
+        max_ang_vel: 0.34
+        max_ang_acc: 0.89
+        ang_alpha: 0.0
+        lin_alpha: 0.0
+        max_lin_acc: 0.5
+        vehicle_model: "bicycle"
+        wheelbase: 0.65
+        recovery_steps: 15
+        failure_threshold: 5
 
-        vehicle_model: "unicycle"
-
-        # Misc
-        command_history_length: 100
+        # Tunable controller parameters(Currently only works for the Bicycle)
+        forward:
+          q_lat: 10.0
+          q_lon: 4.0
+          q_th: 7.0
+          r1: 0.0
+          r2: 3.0
+          racc1: 4.0
+          racc2: 5.0
+          q_f: 1.0 # Multiplier for terminal cost
+        reverse:
+          q_lat: 10.0
+          q_lon: 3.0
+          q_th: 7.0
+          r1: 0.1
+          r2: 1.0
+          racc1: 2.0
+          racc2: 3.5
+          q_f: 1.0 # Multiplier for terminal cost

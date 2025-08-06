@@ -26,7 +26,7 @@ windows:
         start_new_graph:=false
         use_sim_time:=true
         data_dir:=${VTRTEMP}/sim_mars_dome_convoy
-        planner:="unicycle_mpc"
+        planner:="bicycle_mpc"
         model_dir:=${VTRROOT}/models
 
   - window_name: follower_vtr_navigation_system
@@ -40,7 +40,8 @@ windows:
         start_new_graph:=false
         use_sim_time:=true
         data_dir:=${VTRTEMP}/sim_mars_dome_convoy_2
-        planner:="unicycle_mpc_follower"
+        planner:="bicycle_mpc_follower"
+        override_params:=${VTRROOT}/hunter_sim/src/hunter_sim/vtr_hunter/config/follower_params.yaml
         model_dir:=${VTRROOT}/models
         
   - window_name: follower_2_vtr_navigation_system
@@ -54,7 +55,8 @@ windows:
         start_new_graph:=false
         use_sim_time:=true
         data_dir:=${VTRTEMP}/sim_mars_dome_convoy_3
-        planner:="unicycle_mpc_follower"
+        planner:="bicycle_mpc_follower"
+        override_params:=${VTRROOT}/hunter_sim/src/hunter_sim/vtr_hunter/config/follower_params_2.yaml
         model_dir:=${VTRROOT}/models
     
   - window_name: command_mapper
