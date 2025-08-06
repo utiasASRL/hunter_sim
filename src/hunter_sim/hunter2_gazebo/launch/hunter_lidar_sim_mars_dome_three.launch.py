@@ -328,7 +328,7 @@ def generate_launch_description():
     # Robot 2 PointCloud2  
     '/world/default/model/robot2/link/base_link/sensor/laser/scan/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked',
     # Robot 3 PointCloud2
-    '/world/default/model/robot3/link/base_link/sensor/laser/scan/points@sensor_msgs/msg/PointCloudPacked',
+    '/world/default/model/robot3/link/base_link/sensor/laser/scan/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked',
     # Robot 1 cmd_vel
     '/model/robot1/cmd_vel@geometry_msgs/msg/Twist@gz.msgs.Twist',
     # Robot 2 cmd_vel

@@ -56,6 +56,31 @@ windows:
         data_dir:=${VTRTEMP}/sim_mars_dome_convoy_3
         planner:="unicycle_mpc_follower"
         model_dir:=${VTRROOT}/models
+    
+  - window_name: command_mapper
+    layout: main-horizontal
+    shell_command_before:
+      - source ${VTRSRC}/main/install/setup.bash
+      - source ${VTRROOT}/hunter_sim/install/setup.bash
+    panes:
+      - >
+        ros2 run vtr_hunter command_mapper
+        --ros-args
+        -r cmd_vel:=/robot1/cmd_vel
+        -r wheel_velocity:=/robot1/wheel_velocity
+        -r steer_angle:=/robot1/steer_angle
+      - >
+        ros2 run vtr_hunter command_mapper
+        --ros-args
+        -r cmd_vel:=/robot2/cmd_vel
+        -r wheel_velocity:=/robot2/wheel_velocity
+        -r steer_angle:=/robot2/steer_angle
+      - >
+        ros2 run vtr_hunter command_mapper
+        --ros-args
+        -r cmd_vel:=/robot3/cmd_vel
+        -r wheel_velocity:=/robot3/wheel_velocity
+        -r steer_angle:=/robot3/steer_angle
 
   # - window_name: vtr_gui
   #   layout: main-horizontal
@@ -72,29 +97,4 @@ windows:
       - source ${VTRSRC}/main/install/setup.bash
     panes:
       - ros2 run rviz2 rviz2 -d ${VTRSRC}/rviz/ouster.rviz
-
-  - window_name: command_mapper_nodes
-    layout: main-horizontal
-    shell_command_before:
-      - source ${VTRSRC}/main/install/setup.bash
-      - source ${VTRROOT}/hunter_sim/install/setup.bash
-    panes:
-      - >
-        ros2 run vtr_hunter command_mapper_node
-        --ros-args
-        -r cmd_vel:=/robot1/cmd_vel
-        -r wheel_velocity:=/robot1/wheel_velocity
-        -r steer_angle:=/robot1/steer_angle
-      - >
-        ros2 run command_mapper command_mapper_node
-        --ros-args
-        -r cmd_vel:=/robot2/cmd_vel
-        -r wheel_velocity:=/robot2/wheel_velocity
-        -r steer_angle:=/robot2/steer_angle
-      - >
-        ros2 run command_mapper command_mapper_node
-        --ros-args
-        -r cmd_vel:=/robot3/cmd_vel
-        -r wheel_velocity:=/robot3/wheel_velocity
-        -r steer_angle:=/robot3/steer_angle
 

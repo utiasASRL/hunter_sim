@@ -59,7 +59,7 @@
 
     robot_frame: rear_wheel_link
     env_info_topic: env_info
-    lidar_frame: robot3/base_link/laser
+    lidar_frame: laser_frame
     lidar_topic: /robot3/scan/points
     command_topic: /robot3/cmd_vel
     queue_size: 1
