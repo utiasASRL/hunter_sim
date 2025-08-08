@@ -87,8 +87,6 @@
 
     <!-- Ignition Gazebo Joint Control Plugin -->
     <plugin filename="libignition-gazebo-joint-controller-system" name="ignition::gazebo::systems::JointController">
-      <joint_name>front_right_wheel_joint</joint_name>
-      <joint_name>front_left_wheel_joint</joint_name>
       <joint_name>rear_right_joint</joint_name>
       <joint_name>rear_left_joint</joint_name>
       <sub_topic>wheel_velocity</sub_topic>
