@@ -5,16 +5,16 @@
       follow_distance: 2.0
       distance_margin: 100.0
       leader_namespace: /leader
-      waypoint_selection: euclidean
+      waypoint_selection: arclength
       mpc:
-        # forward:
-        #   q_dist: 50.0
-        #   q_lon: 0.0
-        #   q_lat: 10.0
-        # reverse:
-        #   q_dist: 50.0
-        #   q_lon: 0.0
-        #   q_lat: 10.0
+        forward:
+          q_dist: 0.0
+          #q_lon: 0.0
+          #q_lat: 10.0
+        #reverse:
+          #q_dist: 50.0
+          #q_lon: 0.0
+          #q_lat: 10.0
         wheelbase: 0.65
       #longitudinal_control:
       #  kp: 2.0
