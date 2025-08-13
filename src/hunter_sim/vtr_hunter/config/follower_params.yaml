@@ -2,7 +2,7 @@
   ros__parameters:
     path_planning:
       type: bicycle_mpc_follower
-      follow_distance: 4.0
+      follow_distance: 2.0
       distance_margin: 100.0
       leader_namespace: /leader
       waypoint_selection: arclength

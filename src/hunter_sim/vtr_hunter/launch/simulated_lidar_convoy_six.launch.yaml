@@ -1,0 +1,94 @@
+## Online Lidar VTR3
+session_name: vtr_simulated_lidar_hunter_convoy
+
+
+start_directory: ${VTRTEMP}
+suppress_history: false
+
+windows:
+  - window_name: command_line_interface
+    layout: main-horizontal
+    shell_command_before:
+      - source ${VTRSRC}/main/install/setup.bash
+      - source ${VTRROOT}/hunter_sim/install/setup.bash
+    panes:
+      - ros2 run vtr_hunter start_convoy_repeat_three && ros2 topic echo /leader/vtr/mpc_prediction
+      - cd $VTRDATA/gazebo_convoy && ros2 bag record /robot1/cmd_vel /robot2/cmd_vel /robot3/cmd_vel /leader/vtr/mpc_prediction /leader/vtr/odometry /follower/vtr/mpc_prediction /follower/vtr/odometry /follower_2/vtr/mpc_prediction /follower_2/vtr/odometry
+
+  - window_name: follower_3_vtr_navigation_system
+    layout: main-horizontal
+    shell_command_before:
+      - source ${VTRSRC}/main/install/setup.bash
+    panes:
+      - >
+        ROBOT_NAME=follower_3 ros2 launch vtr_navigation vtr_sim.launch.py
+        base_params:=${VTRROOT}/hunter_sim/src/hunter_sim/vtr_hunter/config/lidar_hunter.yaml
+        start_new_graph:=false
+        use_sim_time:=true
+        data_dir:=${VTRTEMP}/sim_mars_dome_convoy_4
+        planner:="bicycle_mpc_follower"
+        override_params:=${VTRROOT}/hunter_sim/src/hunter_sim/vtr_hunter/config/follower_params_3.yaml
+        model_dir:=${VTRROOT}/models
+        
+  - window_name: follower_4_vtr_navigation_system
+    layout: main-horizontal
+    shell_command_before:
+      - source ${VTRSRC}/main/install/setup.bash
+    panes:
+      - >
+        ROBOT_NAME=follower_4 ros2 launch vtr_navigation vtr_sim.launch.py
+        base_params:=${VTRROOT}/hunter_sim/src/hunter_sim/vtr_hunter/config/lidar_hunter.yaml
+        start_new_graph:=false
+        use_sim_time:=true
+        data_dir:=${VTRTEMP}/sim_mars_dome_convoy_5
+        planner:="bicycle_mpc_follower"
+        override_params:=${VTRROOT}/hunter_sim/src/hunter_sim/vtr_hunter/config/follower_params_4.yaml
+        model_dir:=${VTRROOT}/models
+        
+  - window_name: follower_5_vtr_navigation_system
+    layout: main-horizontal
+    shell_command_before:
+      - source ${VTRSRC}/main/install/setup.bash
+    panes:
+      - >
+        ROBOT_NAME=follower_5 ros2 launch vtr_navigation vtr_sim.launch.py
+        base_params:=${VTRROOT}/hunter_sim/src/hunter_sim/vtr_hunter/config/lidar_hunter.yaml
+        start_new_graph:=false
+        use_sim_time:=true
+        data_dir:=${VTRTEMP}/sim_mars_dome_convoy_6
+        planner:="bicycle_mpc_follower"
+        override_params:=${VTRROOT}/hunter_sim/src/hunter_sim/vtr_hunter/config/follower_params_5.yaml
+        model_dir:=${VTRROOT}/models
+    
+  - window_name: command_mapper
+    layout: main-horizontal
+    shell_command_before:
+      - source ${VTRSRC}/main/install/setup.bash
+      - source ${VTRROOT}/hunter_sim/install/setup.bash
+    panes:
+      - >
+        ros2 run vtr_hunter command_mapper
+        --ros-args
+        -r cmd_vel:=/robot4/cmd_vel
+        -r wheel_velocity:=/robot4/wheel_velocity
+        -r steer_angle:=/robot4/steer_angle
+      - >
+        ros2 run vtr_hunter command_mapper
+        --ros-args
+        -r cmd_vel:=/robot5/cmd_vel
+        -r wheel_velocity:=/robot5/wheel_velocity
+        -r steer_angle:=/robot5/steer_angle
+      - >
+        ros2 run vtr_hunter command_mapper
+        --ros-args
+        -r cmd_vel:=/robot6/cmd_vel
+        -r wheel_velocity:=/robot6/wheel_velocity
+        -r steer_angle:=/robot6/steer_angle
+
+  - window_name: rviz2
+    layout: main-horizontal
+    shell_command_before:
+      - source ${VTRSRC}/main/install/setup.bash
+    panes:
+      - ros2 run rviz2 rviz2 -d ${VTRSRC}/rviz/ouster.rviz
+

@@ -22,7 +22,7 @@ windows:
     panes:
       - >
         ROBOT_NAME=leader ros2 launch vtr_navigation vtr_sim.launch.py
-        base_params:=${VTRROOT}/hunter_sim/src/hunter_sim/vtr_hunter/config/lidar_hunter_leader.yaml
+        base_params:=${VTRROOT}/hunter_sim/src/hunter_sim/vtr_hunter/config/lidar_hunter.yaml
         start_new_graph:=false
         use_sim_time:=true
         data_dir:=${VTRTEMP}/sim_mars_dome_convoy
@@ -36,7 +36,7 @@ windows:
     panes:
       - >
         ROBOT_NAME=follower ros2 launch vtr_navigation vtr_sim.launch.py
-        base_params:=${VTRROOT}/hunter_sim/src/hunter_sim/vtr_hunter/config/lidar_hunter_follower.yaml
+        base_params:=${VTRROOT}/hunter_sim/src/hunter_sim/vtr_hunter/config/lidar_hunter.yaml
         start_new_graph:=false
         use_sim_time:=true
         data_dir:=${VTRTEMP}/sim_mars_dome_convoy_2
@@ -51,7 +51,7 @@ windows:
     panes:
       - >
         ROBOT_NAME=follower_2 ros2 launch vtr_navigation vtr_sim.launch.py
-        base_params:=${VTRROOT}/hunter_sim/src/hunter_sim/vtr_hunter/config/lidar_hunter_follower_2.yaml
+        base_params:=${VTRROOT}/hunter_sim/src/hunter_sim/vtr_hunter/config/lidar_hunter.yaml
         start_new_graph:=false
         use_sim_time:=true
         data_dir:=${VTRTEMP}/sim_mars_dome_convoy_3

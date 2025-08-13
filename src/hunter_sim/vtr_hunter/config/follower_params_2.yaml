@@ -1,8 +1,13 @@
 /**:
   ros__parameters:
+    robot_frame: rear_wheel_link
+    env_info_topic: env_info
+    lidar_frame: laser_frame
+    lidar_topic: /robot3/scan/points
+    command_topic: /robot3/cmd_vel
     path_planning:
       type: bicycle_mpc_follower
-      follow_distance: 2.0
+      follow_distance: 4.0
       distance_margin: 100.0
       leader_namespace: /leader
       waypoint_selection: arclength
