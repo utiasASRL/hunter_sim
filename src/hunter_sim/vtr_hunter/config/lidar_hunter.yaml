@@ -227,9 +227,9 @@
         use_pose_prior: true
         num_threads: 8
         first_num_steps: 2
-        initial_max_iter: 4
-        initial_max_pairing_dist: 5.0
-        initial_max_planar_dist: 3.0
+        initial_max_iter: 10
+        initial_max_pairing_dist: 10.0
+        initial_max_planar_dist: 6.0
         refined_max_iter: 50
         refined_max_pairing_dist: 1.0
         refined_max_planar_dist: 0.3

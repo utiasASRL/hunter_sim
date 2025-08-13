@@ -14,11 +14,11 @@ begin_msg.type = MissionCommand.BEGIN_GOALS
 
 set_vertex_4 = MissionCommand()
 set_vertex_4.type = MissionCommand.LOCALIZE
-set_vertex_4.vertex = 13
+set_vertex_4.vertex = 8
 
 set_vertex_5 = MissionCommand()
 set_vertex_5.type = MissionCommand.LOCALIZE
-set_vertex_5.vertex = 7
+set_vertex_5.vertex = 4
 
 set_vertex_6 = MissionCommand()
 set_vertex_6.type = MissionCommand.LOCALIZE

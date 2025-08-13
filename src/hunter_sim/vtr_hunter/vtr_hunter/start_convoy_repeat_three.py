@@ -2,6 +2,7 @@ import sys
 import rclpy
 from rclpy.node import Node
 from vtr_navigation_msgs.msg import MissionCommand, GoalHandle
+import time
 
 repeat_msg = MissionCommand()     
 repeat_msg.type = MissionCommand.ADD_GOAL
@@ -14,15 +15,15 @@ begin_msg.type = MissionCommand.BEGIN_GOALS
 
 set_vertex_1 = MissionCommand()
 set_vertex_1.type = MissionCommand.LOCALIZE
-set_vertex_1.vertex = 33
+set_vertex_1.vertex = 20
 
 set_vertex_2 = MissionCommand()
 set_vertex_2.type = MissionCommand.LOCALIZE
-set_vertex_2.vertex = 27
+set_vertex_2.vertex = 16
 
 set_vertex_3 = MissionCommand()
 set_vertex_3.type = MissionCommand.LOCALIZE
-set_vertex_3.vertex = 20
+set_vertex_3.vertex = 12
 
 
 class ConvoyRepeatNode(Node):

@@ -29,13 +29,6 @@ windows:
         planner:="bicycle_mpc"
         model_dir:=${VTRROOT}/models
 
-  - window_name: wait_after_leader
-    layout: main-horizontal
-    shell_command_before:
-      - source ${VTRSRC}/main/install/setup.bash
-    panes:
-      - sleep 10
-
   - window_name: follower_vtr_navigation_system
     layout: main-horizontal
     shell_command_before:
