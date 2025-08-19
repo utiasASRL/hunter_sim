@@ -510,7 +510,7 @@ def generate_launch_description():
     # Robot 6 wheel velocity
     '/model/robot6/wheel_velocity@std_msgs/msg/Float64@gz.msgs.Double',
     # Clock for simulation time
-    '/clock@rosgraph_msgs/msg/Clock@gz.msgs.Clock',
+    '/world/default/clock@rosgraph_msgs/msg/Clock@gz.msgs.Clock',
     '--ros-args',
     # Remappings for all six robots
     '-r', '/world/default/model/robot1/link/base_link/sensor/laser/scan/points:=/robot1/scan/points',
@@ -539,7 +539,8 @@ def generate_launch_description():
     '-r', '/model/robot3/wheel_velocity:=/robot3/wheel_velocity',
     '-r', '/model/robot4/wheel_velocity:=/robot4/wheel_velocity',
     '-r', '/model/robot5/wheel_velocity:=/robot5/wheel_velocity',
-    '-r', '/model/robot6/wheel_velocity:=/robot6/wheel_velocity'
+    '-r', '/model/robot6/wheel_velocity:=/robot6/wheel_velocity',
+    '-r', '/world/default/clock:=/clock'
     ],
     output='screen'
   )

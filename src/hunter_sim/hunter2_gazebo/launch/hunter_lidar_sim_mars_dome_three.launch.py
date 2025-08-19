@@ -27,13 +27,13 @@ def generate_launch_description():
   world_file_path = 'world/mars_dome.world'
  
   # Pose where we want to spawn the robot
-  spawn_x_val = '3'
+  spawn_x_val = '10'
   spawn_y_val = '0.0'
   spawn_z_val = '-0.6'
   spawn_yaw_val = '0.00'
 
-  spawn_x_val_2 = str(float(spawn_x_val) - 4)
-  spawn_x_val_3 = str(float(spawn_x_val) - 2)
+  spawn_x_val_2 = str(float(spawn_x_val) - 2)
+  spawn_x_val_3 = str(float(spawn_x_val) - 4)
 
   ############ You do not need to change anything below this line #############
  
