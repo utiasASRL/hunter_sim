@@ -509,6 +509,18 @@ def generate_launch_description():
     '/model/robot5/wheel_velocity@std_msgs/msg/Float64@gz.msgs.Double',
     # Robot 6 wheel velocity
     '/model/robot6/wheel_velocity@std_msgs/msg/Float64@gz.msgs.Double',
+    # Robot 1 odometry
+    '/model/robot1/odometry@nav_msgs/msg/Odometry@gz.msgs.Odometry',
+    # Robot 2 odometry
+    '/model/robot2/odometry@nav_msgs/msg/Odometry@gz.msgs.Odometry',
+    # Robot 3 odometry
+    '/model/robot3/odometry@nav_msgs/msg/Odometry@gz.msgs.Odometry',
+    # Robot 4 odometry
+    '/model/robot4/odometry@nav_msgs/msg/Odometry@gz.msgs.Odometry',
+    # Robot 5 odometry
+    '/model/robot5/odometry@nav_msgs/msg/Odometry@gz.msgs.Odometry',
+    # Robot 6 odometry
+    '/model/robot6/odometry@nav_msgs/msg/Odometry@gz.msgs.Odometry',
     # Clock for simulation time
     '/world/default/clock@rosgraph_msgs/msg/Clock@gz.msgs.Clock',
     '--ros-args',
@@ -540,6 +552,14 @@ def generate_launch_description():
     '-r', '/model/robot4/wheel_velocity:=/robot4/wheel_velocity',
     '-r', '/model/robot5/wheel_velocity:=/robot5/wheel_velocity',
     '-r', '/model/robot6/wheel_velocity:=/robot6/wheel_velocity',
+    # Remap odometry topics
+    '-r', '/model/robot1/odometry:=/robot1/gz_odometry',
+    '-r', '/model/robot2/odometry:=/robot2/gz_odometry',
+    '-r', '/model/robot3/odometry:=/robot3/gz_odometry',
+    '-r', '/model/robot4/odometry:=/robot4/gz_odometry',
+    '-r', '/model/robot5/odometry:=/robot5/gz_odometry',
+    '-r', '/model/robot6/odometry:=/robot6/gz_odometry',
+    # Remap clock
     '-r', '/world/default/clock:=/clock'
     ],
     output='screen'

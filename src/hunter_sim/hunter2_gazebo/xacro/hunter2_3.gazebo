@@ -66,6 +66,14 @@
       <sub_topic>wheel_velocity</sub_topic>
     </plugin>
 
+
+    <!-- Ignition Gazebo Joint Control Plugin -->
+    <plugin filename="libignition-gazebo-odometry-publisher-system.so" name="ignition::gazebo::systems::OdometryPublisher">
+      <robot_base_frame>base_link</robot_base_frame>
+      <dimensions>3 </dimensions>
+      <xyz_offset>-0.424080 -0.000011 -0.085581</xyz_offset> <!-- Offset to the rear axle to track the same pose as VTR-->
+    </plugin>
+
 </gazebo>
 
 
