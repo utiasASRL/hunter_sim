@@ -56,6 +56,7 @@
       <wheel_radius>0.165</wheel_radius>
       <odom_publish_frequency>50</odom_publish_frequency>
       <steering_only>true</steering_only>
+      <odom_topic>odom</odom_topic>
     </plugin>
 
 
@@ -66,18 +67,13 @@
       <sub_topic>wheel_velocity</sub_topic>
     </plugin>
 
-    <!-- Joint State Publisher -->
-    <plugin filename="libignition-gazebo-joint-state-publisher-system.so" name="ignition::gazebo::systems::JointStatePublisher">
-      <topic>joint_states</topic>
+    <!-- Pose Publisher -->
+    <plugin filename="libgz-sim-pose-publisher-system.so" name="gz::sim::systems::PosePublisher">
+      <publish_joint_pose>true</publish_joint_pose>
+      <joint_names>base_link_fixed_joint_lump__real_wheel_link_visual_2</joint_names>
+      <topic>test</topic>
     </plugin>
 
-    <!-- Pose Publisher -->
-    <plugin filename="libignition-gazebo-pose-publisher-system.so" name="ignition::gazebo::systems::PosePublisher">
-      <publish_link_pose>true</publish_link_pose>
-      <use_pose_vector_msg>true</use_pose_vector_msg>
-      <static_publisher>true</static_publisher>
-      <static_update_frequency>1</static_update_frequency>
-    </plugin>
 </gazebo>
 
 
