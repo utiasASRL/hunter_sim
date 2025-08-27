@@ -10,7 +10,7 @@
       follow_distance: 6.0
       distance_margin: 100.0
       leader_namespace: /leader
-      waypoint_selection: arclength
+      waypoint_selection: euclidean
       mpc:
         forward:
           q_dist: 0.0
