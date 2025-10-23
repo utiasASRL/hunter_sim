@@ -43,8 +43,9 @@ class ConvoyRepeatNode(Node):
 
     def timer_callback(self):
         if self.i < len(self.messages_1):
-            self.command_pub_follower.publish(self.messages_2[self.i])
             self.command_pub_follower_2.publish(self.messages_3[self.i])
+            time.sleep(2)
+            self.command_pub_follower.publish(self.messages_2[self.i])
             time.sleep(2)
             self.command_pub_leader.publish(self.messages_1[self.i])
             self.get_logger().info('Publishing:')

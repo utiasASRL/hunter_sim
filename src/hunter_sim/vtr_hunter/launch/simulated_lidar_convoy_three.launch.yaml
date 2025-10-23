@@ -12,9 +12,9 @@ windows:
       - source ${VTRSRC}/main/install/setup.bash
       - source ${VTRROOT}/hunter_sim/install/setup.bash
     panes:
-      - ros2 run vtr_hunter start_convoy_repeat_three && ros2 topic echo /leader/vtr/mpc_prediction
-      - cd $VTRDATA/gazebo_convoy && ros2 bag record /robot1/cmd_vel /robot2/cmd_vel /robot3/cmd_vel /robot1/gz_odometry /robot2/gz_odometry /robot3/gz_odometry /leader/vtr/mpc_prediction /leader/vtr/leader_mpc_prediction /leader/vtr/odometry /follower/vtr/mpc_prediction /follower/vtr/leader_mpc_prediction /follower/vtr/odometry /follower_2/vtr/mpc_prediction /follower_2/vtr/leader_mpc_prediction /follower_2/vtr/odometry
-
+      - ros2 run vtr_hunter start_convoy_repeat_three 
+      #- cd $VTRDATA/gazebo_convoy && ros2 bag record /robot1/cmd_vel /robot2/cmd_vel /robot3/cmd_vel /robot1/gz_odometry /robot2/gz_odometry /robot3/gz_odometry /leader/vtr/mpc_prediction /leader/vtr/leader_mpc_prediction /leader/vtr/odometry /follower/vtr/mpc_prediction /follower/vtr/leader_mpc_prediction /follower/vtr/odometry /follower_2/vtr/mpc_prediction /follower_2/vtr/leader_mpc_prediction /follower_2/vtr/odometry
+      - cd $VTRDATA/gazebo_convoy && ros2 bag record /robot1/cmd_vel /robot2/cmd_vel /robot3/cmd_vel /robot4/cmd_vel /robot5/cmd_vel /robot6/cmd_vel /robot1/gz_odometry /robot2/gz_odometry /robot3/gz_odometry /robot4/gz_odometry /robot5/gz_odometry /robot6/gz_odometry
   - window_name: leader_vtr_navigation_system
 
     layout: main-horizontal

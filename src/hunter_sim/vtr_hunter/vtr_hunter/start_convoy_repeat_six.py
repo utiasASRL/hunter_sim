@@ -2,6 +2,7 @@ import sys
 import rclpy
 from rclpy.node import Node
 from vtr_navigation_msgs.msg import MissionCommand, GoalHandle
+import time
 
 repeat_msg = MissionCommand()     
 repeat_msg.type = MissionCommand.ADD_GOAL
@@ -42,9 +43,11 @@ class ConvoyRepeatNode(Node):
 
     def timer_callback(self):
         if self.i < len(self.messages_4):
-            self.command_pub_follower_3.publish(self.messages_4[self.i])
-            self.command_pub_follower_4.publish(self.messages_5[self.i])
             self.command_pub_follower_5.publish(self.messages_6[self.i])
+            time.sleep(2)
+            self.command_pub_follower_4.publish(self.messages_5[self.i])
+            time.sleep(2)
+            self.command_pub_follower_3.publish(self.messages_4[self.i])
             self.get_logger().info('Publishing:')
             self.i += 1
         else:

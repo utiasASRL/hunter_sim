@@ -12,7 +12,7 @@ windows:
       - source ${VTRSRC}/main/install/setup.bash
       - source ${VTRROOT}/hunter_sim/install/setup.bash
     panes:
-      - ros2 run vtr_hunter start_convoy_repeat_six && ros2 topic echo /leader/vtr/mpc_prediction
+      - ros2 run vtr_hunter start_convoy_repeat_six 
       #- cd $VTRDATA/gazebo_convoy && ros2 bag record /robot1/cmd_vel /robot2/cmd_vel /robot3/cmd_vel /leader/vtr/mpc_prediction /leader/vtr/odometry /follower/vtr/mpc_prediction /follower/vtr/odometry /follower_2/vtr/mpc_prediction /follower_2/vtr/odometry
 
   - window_name: follower_3_vtr_navigation_system

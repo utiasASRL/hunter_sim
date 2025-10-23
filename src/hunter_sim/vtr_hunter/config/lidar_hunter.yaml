@@ -226,12 +226,12 @@
         type: lidar.localization_icp
         use_pose_prior: true
         num_threads: 8
-        first_num_steps: 2
-        initial_max_iter: 10
+        first_num_steps: 5
+        initial_max_iter: 20
         initial_max_pairing_dist: 10.0
         initial_max_planar_dist: 6.0
         refined_max_iter: 50
-        refined_max_pairing_dist: 1.0
+        refined_max_pairing_dist: 2.0
         refined_max_planar_dist: 0.3
         averaging_num_steps: 2
         verbose: false
