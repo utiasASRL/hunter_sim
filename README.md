@@ -7,10 +7,14 @@ git clone git@github.com:utiasASRL/hunter_sim.git
 
 **Install dependencies:**
 
-Launch vtr3 docker as root to install:
+Launch vtr3 docker as root to install Gazebo. We want to specifically use Gazebo Harmonic with ROS2 Humble. To do this, first follow [these instruction](https://gazebosim.org/docs/harmonic/install_ubuntu#binary-installation-on-ubuntu
+) to install gz-harmonic from the packages.osrfoundation.org repository.
+
+Afterwards, run the following command to install Gazebo Harmonic:
+
 
 ```console
-apt install ros-humble-ros-gz
+apt install ros-humble-ros-gzharmonic
 ```
 
 **Build package:**
