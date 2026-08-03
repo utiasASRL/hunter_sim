@@ -4,6 +4,7 @@ from launch import LaunchDescription
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch.actions import IncludeLaunchDescription, AppendEnvironmentVariable, DeclareLaunchArgument, OpaqueFunction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch_ros.actions import Node
 
 
 def add_robots(context, *args, **kwargs):
@@ -77,6 +78,15 @@ def generate_launch_description():
         launch_arguments={'gz_args': f"-r {os.path.join(hunter_gazebo_pkg_share, 'world', 'mars_dome.world')}"}.items(),
     )
 
+    base_bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        arguments=[
+            '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
+        ],
+        output='screen'
+    )
+
     spawn_robots = OpaqueFunction(function=add_robots)
    
 
@@ -86,5 +96,6 @@ def generate_launch_description():
         add_hunter2_base_path,
         add_hunter2_gazebo_path,
         gz_server,
+        base_bridge,
         spawn_robots
     ])
