@@ -2,28 +2,30 @@ import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
-from launch.actions import IncludeLaunchDescription, AppendEnvironmentVariable, SetEnvironmentVariable, DeclareLaunchArgument, OpaqueFunction
+from launch.actions import IncludeLaunchDescription, AppendEnvironmentVariable, DeclareLaunchArgument, OpaqueFunction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 
 def add_robots(context, *args, **kwargs):
-    mode_value = int(LaunchConfiguration('num_robots').perform(context))
+    num_robots = int(LaunchConfiguration('num_robots').perform(context))
+    robot_offset = float(LaunchConfiguration('robot_spacing').perform(context))
 
-    COLORS = ["0.0 0.819 0.93 1",
-              "0.85 0.58 0.61 1",
-              "0.56 0.59 0.47 1",
-              "0.96 0.88 0.71 1",
-              "0.93 0.66 0.56 1",
-              "0.71 0.82 0.89 1",
-              "0.73 0.61 0.76 1",
-              "0.40 0.33 0.37 1",
-              "1.00 0.98 0.59 1",
-              "0.42 0.56 0.14 1",
-              "0.64 0.57 0.57 1"]
+    COLORS = [  "0.00 0.90 1.00 1",
+                "1.00 0.10 0.60 1",
+                "0.30 1.00 0.10 1",
+                "1.00 0.90 0.00 1",
+                "1.00 0.45 0.00 1",
+                "0.00 0.40 1.00 1",
+                "0.70 0.10 1.00 1",
+                "1.00 0.00 1.00 1",
+                "0.75 1.00 0.00 1",
+                "0.00 0.85 0.40 1",
+                "1.00 0.15 0.00 1"
+                ]
         
     nodes_to_launch = []
     
-    for i in range(mode_value):
+    for i in range(num_robots):
         nodes_to_launch.append(IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
                 PathJoinSubstitution([
@@ -35,7 +37,7 @@ def add_robots(context, *args, **kwargs):
             launch_arguments={ 
                 'robot_name': f'robot{i}',
                 'robot_colour': COLORS[i % len(COLORS)],
-                'start_x': f'{5*i}' 
+                'start_x': f'{(num_robots - 1 - i) * robot_offset}' 
             }.items()
         ))
 
@@ -46,6 +48,10 @@ def generate_launch_description():
 
     robot_count = DeclareLaunchArgument(
         'num_robots', default_value="1"
+    )
+
+    robot_offset = DeclareLaunchArgument(
+        'robot_spacing', default_value="1"
     )
 
     # 1. Paths and Definitions   
@@ -76,6 +82,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         robot_count,
+        robot_offset,
         add_hunter2_base_path,
         add_hunter2_gazebo_path,
         gz_server,

@@ -7,9 +7,9 @@ class CommandMapperNode(Node):
     def __init__(self):
         super().__init__('command_mapper_node')
 
-        self.wheel_velocity_pub = self.create_publisher(Float64, '/wheel_velocity', 10)
-        self.steer_angle_pub = self.create_publisher(Float64, '/steer_angle', 10)
-        self.cmd_vel_sub = self.create_subscription(Twist, '/cmd_vel', self.cmd_vel_callback, 10)
+        self.wheel_velocity_pub = self.create_publisher(Float64, 'wheel_velocity', 10)
+        self.steer_angle_pub = self.create_publisher(Float64, 'steering_angle', 10)
+        self.cmd_vel_sub = self.create_subscription(Twist, 'cmd_vel', self.cmd_vel_callback, 10)
         self.declare_parameter('wheel_radius', 0.165)
 
     def cmd_vel_callback(self, msg):
@@ -29,9 +29,6 @@ def main(args=None):
         rclpy.spin(node)
     except KeyboardInterrupt:
         pass
-    finally:
-        node.destroy_node()
-        rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
