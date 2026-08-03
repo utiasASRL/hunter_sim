@@ -39,6 +39,8 @@
       <pose> 0 0 0 0 0 0 </pose>
       <visualize>false</visualize>
       <update_rate>10</update_rate>
+      <topic>$(arg namespace)/scan</topic>
+      <frame_id>$(arg namespace)/laser_frame</frame_id>
       <ray>
         <scan>
           <horizontal>

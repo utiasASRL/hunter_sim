@@ -2,7 +2,7 @@
   ros__parameters:
     log_to_file: true
     log_debug: true
-        log_enabled:
+    log_enabled:
       #- tactic.module
       #- mission.state_machine
       #- mission.server
