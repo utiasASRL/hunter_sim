@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="hunter2" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <!-- Include geometry file -->
+  <xacro:include filename="$(find hunter2_base)/urdf/hunter2_base.xacro" />
+
+  <!-- =================================================================== -->
+  <!-- GAZEBO HARMONIC SYSTEM PLUGINS                                      -->
+  <!-- =================================================================== -->
+  <gazebo>
+    <!-- Joint State Publisher Plugin -->
+    <plugin
+      filename="gz-sim-joint-state-publisher-system"
+      name="gz::sim::systems::JointStatePublisher">
+      <topic>$(arg namespace)/joint_states</topic>
+    </plugin>
+
+    <!-- Ackermann Steering Drive Controller -->
+    <plugin
+      filename="gz-sim-ackermann-steering-system"
+      name="gz::sim::systems::AckermannSteering">
+
+      <topic>$(arg namespace)/cmd_vel</topic>
+      <odom_topic>$(arg namespace)/odom</odom_topic>
+      <tf_topic>/tf</tf_topic>
+      <frame_id>$(arg namespace)/odom</frame_id>
+      <child_frame_id>$(arg namespace)/base_link</child_frame_id>
+
+      <!-- Drive Joint Names -->
+      <left_joint>rear_left_joint</left_joint>
+      <right_joint>rear_right_joint</right_joint>
+
+      <!-- Steering Joint Names -->
+      <left_steering_joint>front_steer_left_joint</left_steering_joint>
+      <right_steering_joint>front_steer_right_joint</right_steering_joint>
+
+      <!-- Kinematics dimensions extracted from URDF joints -->
+      <kingpin_width>0.584</kingpin_width>
+      <steering_limit>0.69</steering_limit>
+      <wheel_base>0.651</wheel_base>
+      <wheel_separation>0.585</wheel_separation>
+      <wheel_radius>0.165</wheel_radius>
+
+      <!-- Limits -->
+      <min_velocity>-1.5</min_velocity>
+      <max_velocity>1.5</max_velocity>
+      <min_acceleration>-5.0</min_acceleration>
+      <max_acceleration>5.0</max_acceleration>
+    </plugin>
+  </gazebo>
+</robot>

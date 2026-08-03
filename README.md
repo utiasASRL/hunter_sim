@@ -2,24 +2,23 @@
 
 ```console
 cd $VTRROOT
-git clone git@github.com:utiasASRL/hunter_sim.git
+git clone https://github.com/utiasasrl/hunter_sim.git
 ```
 
-**Install dependencies:**
+**Build Dockerfile**
+This is based on the latest GPU vtr3 Dockerfile on Dockerhub
+```bash
+docker build -t utiasasrl/vtr3-gazebo:latest .
+```
 
-Launch vtr3 docker as root to install Gazebo. We want to specifically use Gazebo Harmonic with ROS2 Humble. To do this, first follow [these instruction](https://gazebosim.org/docs/harmonic/install_ubuntu#binary-installation-on-ubuntu
-) to install gz-harmonic from the packages.osrfoundation.org repository.
-
-Afterwards, run the following command to install Gazebo Harmonic:
-
-
-```console
-apt install ros-humble-ros-gzharmonic
+**Run Docker Container**
+```bash
+docker run -it --name hunter_sim   --privileged   --network=host   --ipc=host   --gpus=all   -e USER_ID=$(id -u)   -e GROUP_ID=$(id -g)   -e USER_NAME=$(id -un)   -e DISPLAY=$DISPLAY   -v /tmp/.X11-unix:/tmp/.X11-unix:rw   -v ${VTRROOT}:${VTRROOT}:rw   -v /dev:/dev -e NVIDIA_DRIVER_CAPABILITIES=all  utiasasrl/vtr3-gazebo:latest
 ```
 
 **Build package:**
 
-In the vtr3 docker run:
+In the docker run:
 
 ```console
 source /opt/ros/humble/setup.bash
@@ -33,20 +32,7 @@ In the vtr3 docker run:
 
 ```console
 cd $VTRROOT/hunter_sim
-source install/setup.bash
 source /opt/ros/humble/setup.bash
-ros2 launch hunter2_gazebo hunter_lidar_sim_mars_dome_three.launch.py 
+source install/setup.bash
+ros2 launch hunter2_gazebo hunter_gazebo_md_sim.launch.py num_robots:=1
 ```
-
-This should open Gazebo and spawn in three simulated Hunter 2.0 robots, while exposing relevant topics to ROS2.
-
-**Launch T&R instances:**
-
-In the vtr3 docker run (in another terminal):
-
-```console
-cd $VTRROOT/hunter_sim/src/hunter_sim/vtr_hunter
-tmuxp load launch/simulated_lidar_hunter.launch.yaml
-```
-
-This launches the VT&R instance of the leader. Similar launch files are available for the remaining robots. Launch files to automatically start convoy repeats are also provided.

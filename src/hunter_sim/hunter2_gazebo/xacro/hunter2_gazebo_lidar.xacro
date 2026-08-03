@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="hunter2" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <!-- Include geometry + gazebo plugins file -->
+  <xacro:include filename="hunter2_gazebo.xacro" />
+
+  <!-- Laser Link -->
+  <joint name="laser_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="laser_frame" />
+    <origin xyz="0.05 0 0.05" rpy="0 0 0" />
+  </joint>
+
+  <link name="laser_frame">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.1" />
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <cylinder radius="0.05" length="0.1" />
+      </geometry>
+      <material name="lidar_black">
+        <color rgba="0.2 0.2 0.2 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <cylinder radius="0.05" length="0.1" />
+      </geometry>
+    </collision>
+  </link>
+
+  <gazebo reference="laser_frame">
+    <material>Gazebo/Grey</material>
+    <sensor name="laser" type="gpu_ray">
+      <pose> 0 0 0 0 0 0 </pose>
+      <visualize>false</visualize>
+      <update_rate>10</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>660</samples>
+            <min_angle>-3.14</min_angle>
+            <max_angle>3.14</max_angle>
+          </horizontal>
+          <vertical>
+            <samples>21</samples>
+            <min_angle>-0.1</min_angle>
+            <max_angle>0.1</max_angle>
+          </vertical>
+        </scan>
+        <range>
+          <min>0.5</min>
+          <max>100</max>
+        </range>
+      </ray>
+    </sensor>
+  </gazebo>
+</robot>
