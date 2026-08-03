@@ -30,7 +30,7 @@ colcon build
 
 In the gazebo docker run:
 
-```console
+```bash
 cd $VTRROOT/hunter_sim
 source /opt/ros/humble/setup.bash
 source install/setup.bash
@@ -54,4 +54,20 @@ If you have access to a gamepad
 ros2 run teleop_twist_joy teleop_node --ros-args -r __ns:=/robot0
 ```
 
+**Run Hunter Sim For a Convoy:**
+In the gazebo docker run:
 
+```bash
+cd $VTRROOT/hunter_sim
+source /opt/ros/humble/setup.bash
+source install/setup.bash
+ros2 launch hunter2_gazebo hunter_gazebo_md_sim.launch.py num_robots:=3 robot_spacing:=2.0
+```
+
+After the simulation has begun, and stabilized, in a second terminal launch vtr.
+
+```bash
+tmuxp load $VTRROOT/src/hunter_sim/vtr_hunter/launch/simulated_lidar_convoy_three.launch.yaml
+```
+
+The tmux file is very small now, you can run the convoy easily with any reasonable number of robots.
