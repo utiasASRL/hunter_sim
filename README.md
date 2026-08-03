@@ -26,9 +26,9 @@ cd $VTRROOT/hunter_sim
 colcon build
 ```
 
-**Run Hunter LiDAR Sim:**
+**Run Hunter Sim For One Robot:**
 
-In the vtr3 docker run:
+In the gazebo docker run:
 
 ```console
 cd $VTRROOT/hunter_sim
@@ -36,3 +36,22 @@ source /opt/ros/humble/setup.bash
 source install/setup.bash
 ros2 launch hunter2_gazebo hunter_gazebo_md_sim.launch.py num_robots:=1
 ```
+After the simulation has begun, and stabilized, in a second terminal launch vtr.
+
+```bash
+tmuxp load $VTRROOT/src/hunter_sim/vtr_hunter/launch/simulated_lidar_hunter.launch.yaml
+```
+You can navigate to http://localhost:5200 and interact with the GUI same as if it were a real robot. 
+To manually drive the robot to teach use the default ros teleop nodes. 
+
+For a keyboard only
+```bash
+ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -r __ns:=/robot0
+```
+
+If you have access to a gamepad
+```bash
+ros2 run teleop_twist_joy teleop_node --ros-args -r __ns:=/robot0
+```
+
+
