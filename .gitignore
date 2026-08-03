@@ -1,0 +1,8 @@
+build/
+install/
+log/
+.vscode/
+__pycache__/
+eval_scripts/
+*.mp4
+*.csv

@@ -85,15 +85,6 @@ windows:
         -r wheel_velocity:=/robot3/wheel_velocity
         -r steer_angle:=/robot3/steer_angle
 
-  # - window_name: vtr_gui
-  #   layout: main-horizontal
-  #   shell_command_before:
-  #     - source ${VTRSRC}/main/install/setup.bash
-  #   panes:
-  #     - ros2 run vtr_gui socket_client  --ros-args -r __ns:=/vtr_follower
-  #     - ros2 run vtr_gui socket_server  --ros-args -r __ns:=/vtr_follower
-  #     - ros2 run vtr_gui web_server  --ros-args -r __ns:=/vtr_follower
-      # - firefox --new-window "localhost:5200" # the webpage has to wait for everything above
   - window_name: rviz2
     layout: main-horizontal
     shell_command_before:

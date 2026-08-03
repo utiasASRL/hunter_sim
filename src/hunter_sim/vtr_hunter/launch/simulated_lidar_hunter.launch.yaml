@@ -49,7 +49,7 @@ windows:
       - source ${VTRROOT}/hunter_sim/install/setup.bash
     panes:
       - >
-        ros2 run vtr_hunter command_mapper_node
+        ros2 run vtr_hunter command_mapper
         --ros-args
         -r cmd_vel:=/robot1/cmd_vel
         -r wheel_velocity:=/robot1/wheel_velocity
