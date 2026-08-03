@@ -12,7 +12,7 @@ windows:
       - source ${VTRSRC}/main/install/setup.bash
       - source ${VTRROOT}/hunter_sim/install/setup.bash
     panes:
-      - ros2 run vtr_hunter start_convoy_repeat_three 
+      - ros2 run vtr_hunter start_convoy_repeat --ros-args -p num_robots:=3 
       # - cd $VTRDATA/gazebo_convoy && ros2 bag record /robot1/cmd_vel /robot2/cmd_vel /robot3/cmd_vel /robot4/cmd_vel /robot5/cmd_vel /robot6/cmd_vel /robot1/gz_odometry /robot2/gz_odometry /robot3/gz_odometry /robot4/gz_odometry /robot5/gz_odometry /robot6/gz_odometry
   
   - window_name: leader_vtr_navigation_system
@@ -21,12 +21,14 @@ windows:
       - source ${VTRSRC}/main/install/setup.bash
     panes:
       - >
-        ROBOT_NAME=leader ros2 launch vtr_navigation vtr_sim.launch.py
+        ROBOT_NAME=robot0 ros2 launch vtr_navigation vtr_sim.launch.py
         base_params:=${VTRROOT}/hunter_sim/src/hunter_sim/vtr_hunter/config/lidar_hunter.yaml
+        override_params:=${VTRROOT}/hunter_sim/src/hunter_sim/vtr_hunter/config/convoy_6.yaml
         start_new_graph:=false
         use_sim_time:=true
-        data_dir:=${VTRTEMP}/sim_mars_dome_convoy
-        planner:="bicycle_mpc"
+        data_dir:=${VTRTEMP}/hunter_sim/dome_teach_new/robot0
+        command_topic:=/robot0/cmd_vel
+        planner:=dynamic_path_planner
         model_dir:=${VTRROOT}/models
 
   - window_name: follower_vtr_navigation_system
@@ -35,13 +37,14 @@ windows:
       - source ${VTRSRC}/main/install/setup.bash
     panes:
       - >
-        ROBOT_NAME=follower ros2 launch vtr_navigation vtr_sim.launch.py
+        ROBOT_NAME=robot1 ros2 launch vtr_navigation vtr_sim.launch.py
         base_params:=${VTRROOT}/hunter_sim/src/hunter_sim/vtr_hunter/config/lidar_hunter.yaml
+        override_params:=${VTRROOT}/hunter_sim/src/hunter_sim/vtr_hunter/config/convoy_6.yaml
         start_new_graph:=false
         use_sim_time:=true
-        data_dir:=${VTRTEMP}/sim_mars_dome_convoy_2
-        planner:="bicycle_mpc_follower"
-        override_params:=${VTRROOT}/hunter_sim/src/hunter_sim/vtr_hunter/config/follower_params.yaml
+        data_dir:=${VTRTEMP}/hunter_sim/dome_teach_new/robot1
+        command_topic:=/robot1/cmd_vel
+        planner:=dynamic_path_planner
         model_dir:=${VTRROOT}/models
         
   - window_name: follower_2_vtr_navigation_system
@@ -50,13 +53,14 @@ windows:
       - source ${VTRSRC}/main/install/setup.bash
     panes:
       - >
-        ROBOT_NAME=follower_2 ros2 launch vtr_navigation vtr_sim.launch.py
+        ROBOT_NAME=robot2 ros2 launch vtr_navigation vtr_sim.launch.py
         base_params:=${VTRROOT}/hunter_sim/src/hunter_sim/vtr_hunter/config/lidar_hunter.yaml
+        override_params:=${VTRROOT}/hunter_sim/src/hunter_sim/vtr_hunter/config/convoy_6.yaml
         start_new_graph:=false
         use_sim_time:=true
-        data_dir:=${VTRTEMP}/sim_mars_dome_convoy_3
-        planner:="bicycle_mpc_follower"
-        override_params:=${VTRROOT}/hunter_sim/src/hunter_sim/vtr_hunter/config/follower_params_2.yaml
+        data_dir:=${VTRTEMP}/hunter_sim/dome_teach_new/robot2
+        command_topic:=/robot2/cmd_vel
+        planner:=dynamic_path_planner
         model_dir:=${VTRROOT}/models
     
   - window_name: command_mapper
@@ -67,26 +71,10 @@ windows:
     panes:
       - >
         ros2 run vtr_hunter command_mapper
-        --ros-args
-        -r cmd_vel:=/robot1/cmd_vel
-        -r wheel_velocity:=/robot1/wheel_velocity
-        -r steer_angle:=/robot1/steer_angle
+        --ros-args -r __ns:=/robot0
       - >
         ros2 run vtr_hunter command_mapper
-        --ros-args
-        -r cmd_vel:=/robot2/cmd_vel
-        -r wheel_velocity:=/robot2/wheel_velocity
-        -r steer_angle:=/robot2/steer_angle
+        --ros-args -r __ns:=/robot1
       - >
         ros2 run vtr_hunter command_mapper
-        --ros-args
-        -r cmd_vel:=/robot3/cmd_vel
-        -r wheel_velocity:=/robot3/wheel_velocity
-        -r steer_angle:=/robot3/steer_angle
-
-  - window_name: rviz2
-    layout: main-horizontal
-    shell_command_before:
-      - source ${VTRSRC}/main/install/setup.bash
-    panes:
-      - ros2 run rviz2 rviz2 -d ${VTRSRC}/rviz/ouster.rviz
+        --ros-args -r __ns:=/robot2

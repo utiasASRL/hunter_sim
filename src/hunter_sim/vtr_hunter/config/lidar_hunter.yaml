@@ -1,6 +1,6 @@
 /**:
   ros__parameters:
-    log_to_file: true
+    log_to_file: false
     log_debug: true
     log_enabled:
       #- tactic.module
