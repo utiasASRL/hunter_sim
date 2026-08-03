@@ -14,13 +14,11 @@ windows:
       - ros2 run vtr_gui setup_client  --ros-args -r __ns:=/$ROBOT_NAME/vtr
     panes:
       - >
-        ros2 launch vtr_navigation vtr_sim.launch.py
+        ros2 launch vtr_hunter vtr_sim.launch.py
+        robot_name:=$ROBOT_NAME
         base_params:=${VTRROOT}/hunter_sim/src/hunter_sim/vtr_hunter/config/lidar_hunter.yaml
         start_new_graph:=false
-        use_sim_time:=true
         planner:="bicycle_mpc"
-        command_topic:=/$ROBOT_NAME/cmd_vel
-        model_dir:=${VTRROOT}/models
         
 
   - window_name: vtr_gui
@@ -39,13 +37,3 @@ windows:
       - source ${VTRSRC}/main/install/setup.bash
     panes:
       - ros2 run rviz2 rviz2 -d ${VTRSRC}/rviz/ouster.rviz
-  
-  - window_name: command_mapper_nodes
-    layout: main-horizontal
-    shell_command_before:
-      - source ${VTRSRC}/main/install/setup.bash
-      - source ${VTRROOT}/hunter_sim/install/setup.bash
-    panes:
-      - >
-        ros2 run vtr_hunter command_mapper
-        --ros-args -r __ns:=/$ROBOT_NAME
