@@ -4,13 +4,6 @@
 
   <!-- Base Link -->
   <link name="base_link">
-    <inertial>
-      <origin xyz="0.0266989327622036 0.000409203500587652 -0.135901124750884" rpy="0 0 0" />
-      <mass value="10" />
-      <inertia
-        ixx="0.0332370959804736" ixy="-1.013150489971E-06" ixz="-0.00188859201421112"
-        iyy="0.111072002332437" iyz="-5.13308150598312E-07" izz="0.12660862809283" />
-    </inertial>
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
@@ -27,6 +20,21 @@
       </geometry>
     </collision>
   </link>
+
+  <link name="base_link2">
+    <inertial>
+      <origin xyz="0.0266989327622036 0.000409203500587652 -0.135901124750884" rpy="0 0 0" />
+      <mass value="10" />
+      <inertia
+        ixx="0.0332370959804736" ixy="-1.013150489971E-06" ixz="-0.00188859201421112"
+        iyy="0.111072002332437" iyz="-5.13308150598312E-07" izz="0.12660862809283" />
+    </inertial>
+  </link>
+
+  <joint name="dummy_base" type="fixed">
+    <parent link="base_link" />
+    <child link="base_link2" />
+  </joint>
 
   <!-- Front Left Steering Link & Joint -->
   <link name="front_steer_left_link">
