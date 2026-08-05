@@ -55,7 +55,8 @@ ros2 run teleop_twist_joy teleop_node --ros-args -r __ns:=/robot0
 ```
 
 **Run Hunter Sim For a Convoy:**
-In the gazebo docker run:
+
+In the Gazebo Docker run:
 
 ```bash
 cd $VTRROOT/hunter_sim
