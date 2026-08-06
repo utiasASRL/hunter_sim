@@ -1,9 +1,17 @@
 **Clone repo:**
 
+This repo uses git LFS. First, ensure this is installed.
+
+```bash
+sudo apt-get install git-lfs
+git lfs install
+```
+
 ```console
 cd $VTRROOT
 git clone https://github.com/utiasasrl/hunter_sim.git
 cd hunter_sim
+git lfs pull
 ```
 
 **Build Dockerfile**
@@ -40,7 +48,7 @@ ros2 launch hunter2_gazebo hunter_gazebo_md_sim.launch.py num_robots:=1
 After the simulation has begun, and stabilized, in a second terminal launch vtr.
 
 ```bash
-tmuxp load $VTRROOT/src/hunter_sim/vtr_hunter/launch/simulated_lidar_hunter.launch.yaml
+tmuxp load $VTRROOT/hunter_sim/src/hunter_sim/vtr_hunter/launch/simulated_lidar_hunter.launch.yaml
 ```
 You can navigate to http://localhost:5200 and interact with the GUI same as if it were a real robot. 
 To manually drive the robot to teach use the default ros teleop nodes. 
@@ -69,7 +77,7 @@ ros2 launch hunter2_gazebo hunter_gazebo_md_sim.launch.py num_robots:=3 robot_sp
 After the simulation has begun, and stabilized, in a second terminal launch vtr.
 
 ```bash
-tmuxp load $VTRROOT/src/hunter_sim/vtr_hunter/launch/simulated_lidar_convoy_three.launch.yaml
+tmuxp load $VTRROOT/hunter_sim/src/hunter_sim/vtr_hunter/launch/simulated_lidar_convoy_three.launch.yaml
 ```
 
 The tmux file is very small now, you can run the convoy easily with any reasonable number of robots.
