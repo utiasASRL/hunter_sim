@@ -3,6 +3,7 @@
 ```console
 cd $VTRROOT
 git clone https://github.com/utiasasrl/hunter_sim.git
+cd hunter_sim
 ```
 
 **Build Dockerfile**
