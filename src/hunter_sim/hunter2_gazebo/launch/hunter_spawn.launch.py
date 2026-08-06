@@ -73,7 +73,7 @@ def spawn_robot(context, *args, **kwargs):
             # Topic@ROS_Type[Direction]Gazebo_Type
             f'/{robot_ns}/steering_angle@std_msgs/msg/Float64]gz.msgs.Double',
             f'/{robot_ns}/wheel_velocity@std_msgs/msg/Float64]gz.msgs.Double',
-            f'/{robot_ns}/odom@nav_msgs/msg/Odometry[gz.msgs.Odometry',
+            f'/{robot_ns}/gz_odom@nav_msgs/msg/Odometry[gz.msgs.Odometry',
             f'/{robot_ns}/joint_states@sensor_msgs/msg/JointState[gz.msgs.Model',
             f'/{robot_ns}/scan/points@sensor_msgs/msg/PointCloud2[gz.msgs.PointCloudPacked'
         ],

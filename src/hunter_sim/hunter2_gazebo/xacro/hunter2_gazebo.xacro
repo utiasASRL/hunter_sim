@@ -20,7 +20,6 @@
       name="gz::sim::systems::AckermannSteering">
 
       <topic>$(arg namespace)/steering_angle</topic>
-      <odom_topic>$(arg namespace)/odom</odom_topic>
       <tf_topic>/tf</tf_topic>
       <frame_id>$(arg namespace)/odom</frame_id>
       <child_frame_id>$(arg namespace)/base_link</child_frame_id>
@@ -46,7 +45,6 @@
       <min_acceleration>-5.0</min_acceleration>
       <max_acceleration>5.0</max_acceleration>
 
-      <odom_publish_frequency>50</odom_publish_frequency>
       <steering_only>true</steering_only>
     </plugin>
 
@@ -55,5 +53,16 @@
       <joint_name>rear_left_joint</joint_name>
       <topic>$(arg namespace)/wheel_velocity</topic>
     </plugin>
+
+    <plugin
+      filename="gz-sim-odometry-publisher-system"
+      name="gz::sim::systems::OdometryPublisher">
+      <odom_frame>$(arg namespace)/odom</odom_frame>
+      <robot_base_frame>$(arg namespace)/base_link</robot_base_frame>
+      <odom_publish_frequency>50</odom_publish_frequency>
+      <odom_topic>$(arg namespace)/gz_odom</odom_topic>
+      <dimensions>3</dimensions>
+    </plugin>
+
   </gazebo>
 </robot>
