@@ -18,6 +18,7 @@ windows:
     layout: main-horizontal
     shell_command_before:
       - source ${VTRSRC}/main/install/setup.bash
+      - source ${VTRROOT}/hunter_sim/install/setup.bash
     panes:
       - >
         ros2 launch vtr_hunter vtr_convoy_launcher.launch.py
