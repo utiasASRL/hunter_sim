@@ -51,6 +51,14 @@ def spawn_robot(context, *args, **kwargs):
         output='screen'
     )
 
+    # Remap from cmd_vel to the steering and wheel speed topics
+    steering_remap_node = Node(
+        package="hunter2_gazebo",
+        namespace=robot_ns,
+        executable='command_mapper',
+        output='screen'
+    )
+
     delayed_spawn = TimerAction(
         period=5.0,
         actions=[spawn_robot]
@@ -75,6 +83,7 @@ def spawn_robot(context, *args, **kwargs):
     return [
         robot_state_publisher,
         delayed_spawn,
+        steering_remap_node,
         bridge
     ]
 

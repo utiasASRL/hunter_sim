@@ -51,14 +51,7 @@ def setup_vtr(context, *args, **kwargs):
         ],
     )
 
-    steering_remap_node = Node(
-        package="vtr_hunter",
-        namespace=f'/{robot_name}',
-        executable='command_mapper',
-        output='screen'
-    )
-
-    return [vtr_node, steering_remap_node]
+    return [vtr_node]
 
 def generate_launch_description():
     
