@@ -32,7 +32,6 @@ def spawn_robot(context, *args, **kwargs):
         parameters=[{
             'robot_description': robot_desc,
             'use_sim_time': True, # Crucial: tells ROS to use Gazebo's clock
-            'frame_prefix': f'{robot_ns}/'
         }]
     )
 
