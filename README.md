@@ -74,7 +74,7 @@ ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -r __ns:=/robot0
 
 If you have access to a gamepad
 ```bash
-ros2 run teleop_twist_joy teleop_node --ros-args -r __ns:=/robot0
+ros2 launch teleop_twist_joy teleop-launch.py joy_config:='xbox' joy_vel:=/robot0/cmd_vel
 ```
 
 **Stopping the Simulation**
