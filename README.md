@@ -7,7 +7,7 @@ sudo apt-get install git-lfs
 git lfs install
 ```
 
-```console
+```bash
 cd $VTRROOT
 git clone https://github.com/utiasasrl/hunter_sim.git
 cd hunter_sim
@@ -17,6 +17,7 @@ git lfs pull
 **Build Dockerfile**
 This is based on the latest GPU vtr3 Dockerfile on Dockerhub
 ```bash
+cd $VTRROOT/hunter_sim
 docker build -t utiasasrl/vtr3-gazebo:latest .
 ```
 
@@ -25,9 +26,20 @@ docker build -t utiasasrl/vtr3-gazebo:latest .
 docker run -it --name hunter_sim   --privileged   --network=host   --ipc=host   --gpus=all   -e USER_ID=$(id -u)   -e GROUP_ID=$(id -g)   -e USER_NAME=$(id -un)   -e DISPLAY=$DISPLAY   -v /tmp/.X11-unix:/tmp/.X11-unix:rw   -v ${VTRROOT}:${VTRROOT}:rw   -v /dev:/dev -e NVIDIA_DRIVER_CAPABILITIES=all  utiasasrl/vtr3-gazebo:latest
 ```
 
+To enter the container from another terminal
+```bash
+docker exec -it hunter_sim entrypoint.sh bash
+```
+
+If you want to enter the existing container
+```bash
+docker start hunter_sim
+docker exec -it hunter_sim entrypoint.sh bash
+```
+
 **Build package:**
 
-In the docker run:
+Inside the docker container:
 
 ```console
 source /opt/ros/humble/setup.bash
@@ -51,6 +63,8 @@ After the simulation has begun, and stabilized, in a second terminal launch vtr.
 tmuxp load $VTRROOT/hunter_sim/src/hunter_sim/vtr_hunter/launch/simulated_lidar_hunter.launch.yaml
 ```
 You can navigate to http://localhost:5200 and interact with the GUI same as if it were a real robot. 
+
+
 To manually drive the robot to teach use the default ros teleop nodes. 
 
 For a keyboard only
@@ -62,6 +76,9 @@ If you have access to a gamepad
 ```bash
 ros2 run teleop_twist_joy teleop_node --ros-args -r __ns:=/robot0
 ```
+
+**Stopping the Simulation**
+In the tmux session started above press `Ctrl+B` then `Shift+;` and type `kill-session`
 
 **Run Hunter Sim For a Convoy:**
 
