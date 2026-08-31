@@ -38,8 +38,8 @@ def setup_vtr(context, *args, **kwargs):
             PathJoinSubstitution((config_dir, LaunchConfiguration("base_params"))),
             {
                 "robot_frame": f"{robot_name}/base_link",
-                "lidar_frame": f"{robot_name}/laser_frame",
-                "lidar_topic": f"/{robot_name}/scan/points",
+                "lidar_frame": f"{robot_name}/lidar_link",
+                "lidar_topic": f"/{robot_name}/lidar/points",
                 "data_dir": pose_graph_dir,
                 "model_dir": LaunchConfiguration("model_dir"),
                 "start_new_graph": LaunchConfiguration("start_new_graph"),

@@ -1,0 +1,289 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="rover1">
+
+  <!-- Set this variable to True to setup for use with Gazebo simulation. -->
+  <xacro:arg name="namespace" default="lelr_dt_1" />
+  <xacro:arg name="gazebo" default="True" />
+
+  <!-- Links and Joints -->
+  <link name="$(arg namespace)/base_footprint"/>
+  <joint name="$(arg namespace)/base_footprint_joint" type="fixed">
+    <parent link="$(arg namespace)/base_link"/>
+    <child link="$(arg namespace)/base_footprint"/>
+    <origin xyz="0 0 -0.35560" rpy="0 0 0"/>
+  </joint>
+
+  <link name="$(arg namespace)/lidar_sensor_link"/>
+  <joint name="$(arg namespace)/lidar_sensor_joint" type="fixed">
+    <parent link="$(arg namespace)/base_link"/>
+    <child link="$(arg namespace)/lidar_sensor_link"/>
+    <origin xyz="2.300 0.000 1.6535" rpy="0.0 0.0 0.0"/>
+  </joint>
+
+  <link name="$(arg namespace)/lidar_link"/>
+  <joint name="$(arg namespace)/lidar_joint" type="fixed">
+    <parent link="$(arg namespace)/lidar_sensor_link"/>
+    <child link="$(arg namespace)/lidar_link"/>
+    <origin xyz="0 0 0.038195" rpy="0.0 0.0 0"/>
+  </joint>
+
+  <link name="$(arg namespace)/base_CM">
+    <inertial>
+      <mass value="1100.0"/>
+      <origin rpy="0.0 -0.0 0.0" xyz="0.0 0.0 0.0"/>
+      <inertia ixx="228.0" ixy="0.0" ixz="124.0" iyy="844.0" iyz="0.0" izz="848.0"/>
+    </inertial>
+  </link>
+  <joint name="$(arg namespace)/base_CM_joint" type="fixed">
+    <parent link="$(arg namespace)/base_link"/>
+    <child link="$(arg namespace)/base_CM"/>
+    <origin xyz="1.006 0 0.4268" rpy="0 0 0"/>
+  </joint>
+
+  <link name="$(arg namespace)/base_link">
+    <visual>
+      <origin rpy="0.0 -0.0 0.0" xyz="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="file://$(find lelr_dt)/robot_description/lelr_v0/meshes/lelr_v0_lelr_chassis_body.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0.0 -0.0 0.0" xyz="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="file://$(find lelr_dt)/robot_description/lelr_v0/meshes/lelr_v0_lelr_chassis_body.dae"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="$(arg namespace)/wheel_front_right_link">
+    <visual>
+      <origin rpy="3.141592653589793 -0.0 0.0" xyz="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="file://$(find lelr_dt)/robot_description/lelr_v0/meshes/lelr_v0_lelr_wheel_body.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="3.141592653589793 -0.0 0.0" xyz="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="file://$(find lelr_dt)/robot_description/lelr_v0/meshes/lelr_v0_lelr_wheel_body.dae"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="35.0"/>
+      <origin rpy="0.0 -0.0 0.0" xyz="0.0 0.0 0.0"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+  </link>
+
+  <link name="$(arg namespace)/wheel_front_left_link">
+    <visual>
+      <origin rpy="0.0 -0.0 0.0" xyz="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="file://$(find lelr_dt)/robot_description/lelr_v0/meshes/lelr_v0_lelr_wheel_body.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0.0 -0.0 0.0" xyz="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="file://$(find lelr_dt)/robot_description/lelr_v0/meshes/lelr_v0_lelr_wheel_body.dae"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="35.0"/>
+      <origin rpy="0.0 -0.0 0.0" xyz="0.0 0.0 0.0"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+  </link>
+
+  <link name="$(arg namespace)/wheel_back_right_link">
+    <visual>
+      <origin rpy="3.141592653589793 -0.0 0.0" xyz="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="file://$(find lelr_dt)/robot_description/lelr_v0/meshes/lelr_v0_lelr_wheel_body.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="3.141592653589793 -0.0 0.0" xyz="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="file://$(find lelr_dt)/robot_description/lelr_v0/meshes/lelr_v0_lelr_wheel_body.dae"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="35.0"/>
+      <origin rpy="0.0 -0.0 0.0" xyz="0.0 0.0 0.0"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+  </link>
+
+  <link name="$(arg namespace)/wheel_back_left_link">
+    <visual>
+      <origin rpy="0.0 -0.0 0.0" xyz="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="file://$(find lelr_dt)/robot_description/lelr_v0/meshes/lelr_v0_lelr_wheel_body.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0.0 -0.0 0.0" xyz="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="file://$(find lelr_dt)/robot_description/lelr_v0/meshes/lelr_v0_lelr_wheel_body.dae"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="35.0"/>
+      <origin rpy="-1.5707963267948966 0.0 0.0" xyz="0.0 0.0 0.0"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+  </link>
+
+  <link name="$(arg namespace)/steering_left_link">
+    <inertial>
+      <mass value="1.0"/>
+      <origin rpy="0.0 -0.0 0.0" xyz="0.0 0.0 0.0"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+  </link>
+
+  <link name="$(arg namespace)/steering_right_link">
+    <inertial>
+      <mass value="1.0"/>
+      <origin rpy="0.0 -0.0 0.0" xyz="0.0 0.0 0.0"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+  </link>
+
+  <joint name="$(arg namespace)/wheel_front_right_joint" type="continuous">
+    <parent link="$(arg namespace)/steering_right_link"/>
+    <child link="$(arg namespace)/wheel_front_right_link"/>
+    <origin rpy="-1.5707963267948966 0.0 0.0" xyz="0.0 0.0 0.0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <joint name="$(arg namespace)/wheel_front_left_joint" type="continuous">
+    <parent link="$(arg namespace)/steering_left_link"/>
+    <child link="$(arg namespace)/wheel_front_left_link"/>
+    <origin rpy="-1.5707963267948966 0.0 0.0" xyz="0.0 0.0 0.0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <joint name="$(arg namespace)/wheel_back_right_joint" type="continuous">
+    <parent link="$(arg namespace)/base_link"/>
+    <child link="$(arg namespace)/wheel_back_right_link"/>
+    <origin rpy="-1.5707963267948966 0.0 0.0" xyz="0.0 -0.8725 0.0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <joint name="$(arg namespace)/wheel_back_left_joint" type="continuous">
+    <parent link="$(arg namespace)/base_link"/>
+    <child link="$(arg namespace)/wheel_back_left_link"/>
+    <origin rpy="-1.5707963267948966 0.0 0.0" xyz="0.0 0.8725 0.0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <joint name="$(arg namespace)/steering_right_joint" type="revolute">
+    <parent link="$(arg namespace)/base_link"/>
+    <child link="$(arg namespace)/steering_right_link"/>
+    <origin rpy="0.0 -0.0 0.0" xyz="1.83 -0.8725 0.0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-0.6" upper="0.6" effort="1000.0" velocity="10.0"/>
+  </joint>
+
+  <joint name="$(arg namespace)/steering_left_joint" type="revolute">
+    <parent link="$(arg namespace)/base_link"/>
+    <child link="$(arg namespace)/steering_left_link"/>
+    <origin rpy="0.0 -0.0 0.0" xyz="1.83 0.8725 0.0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-0.6" upper="0.6" effort="1000.0" velocity="10.0"/>
+  </joint>
+
+  <!-- Setup Gazebo Sim plugins -->
+  <xacro:if value="$(arg gazebo)">
+
+    <gazebo>
+
+      <!-- Ackermann Steering Plugin (Steering Angle Only) -->
+      <plugin
+        filename="gz-sim-ackermann-steering-system"
+        name="gz::sim::systems::AckermannSteering">
+        <left_joint>$(arg namespace)/wheel_back_left_joint</left_joint>
+        <right_joint>$(arg namespace)/wheel_back_right_joint</right_joint>
+        <left_steering_joint>$(arg namespace)/steering_left_joint</left_steering_joint>
+        <right_steering_joint>$(arg namespace)/steering_right_joint</right_steering_joint>
+        <kingpin_width>1.745</kingpin_width>
+        <wheel_base>1.83</wheel_base>
+        <wheel_separation>1.745</wheel_separation>
+        <wheel_radius>0.3556</wheel_radius>
+        <steering_limit>0.6</steering_limit>
+        <steering_only>true</steering_only>
+        <topic>$(arg namespace)/steering_angle</topic>
+      </plugin>
+
+      <!-- Separate Joint Controller Plugin (Linear Wheel Velocity) -->
+      <plugin
+        filename="gz-sim-joint-controller-system"
+        name="gz::sim::systems::JointController">
+        <joint_name>$(arg namespace)/wheel_back_left_joint</joint_name>
+        <joint_name>$(arg namespace)/wheel_back_right_joint</joint_name>
+        <topic>$(arg namespace)/wheel_velocity</topic>
+      </plugin>
+
+      <!-- Joint State Publisher Plugin -->
+      <plugin
+        filename="gz-sim-joint-state-publisher-system"
+        name="gz::sim::systems::JointStatePublisher">
+        <topic>$(arg namespace)/joint_states</topic>
+      </plugin>
+
+      <!-- Odometry Publisher Plugin -->
+      <plugin
+        filename="gz-sim-odometry-publisher-system"
+        name="gz::sim::systems::OdometryPublisher">
+        <odom_frame>world</odom_frame>
+        <robot_base_frame>$(arg namespace)/base_link</robot_base_frame>
+        <odom_topic>$(arg namespace)/gz_odom</odom_topic>
+        <odom_publish_frequency>10</odom_publish_frequency>
+        <dimensions>3</dimensions>
+      </plugin>
+
+    </gazebo>
+
+    <!-- 3D LiDAR Sensor -->
+    <gazebo reference="$(arg namespace)/lidar_link">
+      <sensor name="lidar_sensor" type="gpu_lidar">
+        <topic>$(arg namespace)/lidar</topic>
+        <gz_frame_id>$(arg namespace)/lidar_link</gz_frame_id>
+        <pose>0 0 0 0 0 0</pose>
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>512</samples>
+              <resolution>1</resolution>
+              <min_angle>-1.65</min_angle>
+              <max_angle>1.65</max_angle>
+            </horizontal>
+            <vertical>
+              <samples>128</samples>
+              <resolution>1</resolution>
+              <min_angle>-0.785398163</min_angle>
+              <max_angle>0.785398163</max_angle>
+            </vertical>
+          </scan>
+          <range>
+            <min>0.5</min>
+            <max>50</max>
+            <resolution>0.02</resolution>
+          </range>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.001</stddev>
+          </noise>
+        </ray>
+        <always_on>true</always_on>
+        <update_rate>10</update_rate>
+        <visualize>true</visualize>
+      </sensor>
+    </gazebo>
+
+  </xacro:if>
+
+</robot>
