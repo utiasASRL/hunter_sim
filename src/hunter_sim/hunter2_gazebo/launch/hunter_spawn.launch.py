@@ -11,6 +11,7 @@ def spawn_robot(context, *args, **kwargs):
     robot_ns = LaunchConfiguration('robot_name').perform(context)
     robot_colour = LaunchConfiguration('robot_colour').perform(context)
     start_x = LaunchConfiguration('start_x').perform(context)
+    start_y = LaunchConfiguration('start_y').perform(context)
 
     # 1. Paths and Definitions
     xacro_filename = 'hunter2_gazebo_lidar.xacro'
@@ -46,7 +47,9 @@ def spawn_robot(context, *args, **kwargs):
         arguments=[
             '-topic', 'robot_description',
             '-name', robot_ns,
-            '-x', start_x
+            '-x', start_x,
+            '-y', start_y,
+            '-z', '1.0'
         ],
         output='screen'
     )
@@ -97,8 +100,11 @@ def generate_launch_description():
         'robot_colour', default_value="0.0 0.8196 0.9333 1"
     )
 
-    robot_position = DeclareLaunchArgument(
+    robot_position_x = DeclareLaunchArgument(
         'start_x', default_value="0.0"
+    )
+    robot_position_y = DeclareLaunchArgument(
+        'start_y', default_value="0.0"
     )
 
     delayed_spawner = OpaqueFunction(function=spawn_robot)
@@ -107,6 +113,7 @@ def generate_launch_description():
     return LaunchDescription([
         robot_ns,
         robot_colour,
-        robot_position,
+        robot_position_x,
+        robot_position_y,
         delayed_spawner
     ])
