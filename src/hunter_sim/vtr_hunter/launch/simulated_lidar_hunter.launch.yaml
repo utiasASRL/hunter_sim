@@ -5,7 +5,7 @@ start_directory: ${VTRTEMP}
 suppress_history: false
 environment:
   ROBOT_NAME: robot0
-  ROS_LOCALHOST_ONLY: 1
+  ROS_LOCALHOST_ONLY: "1"
 
 windows:
   - window_name: vtr_navigation_system

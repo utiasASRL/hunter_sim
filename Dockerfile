@@ -19,3 +19,4 @@ RUN mkdir -p /usr/share/glvnd/egl_vendor.d && \
     }\n\
 }' > /usr/share/glvnd/egl_vendor.d/10_nvidia.json
 ENV __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/10_nvidia.json
+ENV ROS_LOCALHOST_ONLY=1
