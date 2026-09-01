@@ -2,7 +2,7 @@ import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
-from launch.actions import IncludeLaunchDescription, AppendEnvironmentVariable, DeclareLaunchArgument, OpaqueFunction
+from launch.actions import IncludeLaunchDescription, SetEnvironmentVariable, AppendEnvironmentVariable, DeclareLaunchArgument, OpaqueFunction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 
@@ -69,6 +69,10 @@ def generate_launch_description():
         name='GZ_SIM_RESOURCE_PATH',
         value=os.path.dirname(hunter_gazebo_pkg_share)
     )
+    set_local_host = SetEnvironmentVariable(
+        name="ROS_LOCALHOST_ONLY",
+        value='1'
+    )
 
     # 2. Start Gazebo
     gz_server = IncludeLaunchDescription(
@@ -93,6 +97,7 @@ def generate_launch_description():
     return LaunchDescription([
         robot_count,
         robot_offset,
+        set_local_host,
         add_hunter2_base_path,
         add_hunter2_gazebo_path,
         gz_server,
