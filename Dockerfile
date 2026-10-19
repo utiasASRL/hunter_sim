@@ -9,7 +9,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgl1 \
     libglx0 \
     libegl1 \
-    mesa-utils && \
+    mesa-utils \
+    python3-numpy \
+    python3-rasterio \
+    python3-yaml && \
     rm -rf /var/lib/apt/lists/*
 RUN mkdir -p /usr/share/glvnd/egl_vendor.d && \
     echo '{\n\
