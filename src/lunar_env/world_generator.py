@@ -11,6 +11,8 @@ import argparse
 import json
 import math
 import shutil
+import struct
+import zlib
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
@@ -48,10 +50,10 @@ CRATER_DENSITY_PER_KM2 = np.array(
 
 @dataclass
 class LightingConfig:
-    azimuth_deg: float = 35.0
-    elevation_deg: float = 8.0
+    azimuth_deg: float = 215.0
+    elevation_deg: float = 2.0
     intensity: float = 1.0
-    ambient: float = 0.035
+    ambient: float = 0.18
 
 
 @dataclass
@@ -59,34 +61,41 @@ class Config:
     input_tif: str
     output_dir: str
     seed: int = 0
-    crop_size_m: float = 1000.0
-    terrain_resolution_m: float = 1.0
-    visual_resolution_m: float = 2.0
-    collision_resolution_m: float = 2.0
+    crop_size_m: float = 500.0
+    terrain_resolution_m: float = 0.5
     smoothing_radius_m: float = 5.0
     terrain_reference_z_m: float = 0.0
-    crater_min_diameter_m: float = 5.0
+    crater_min_diameter_m: float = 0.5
     crater_max_diameter_m: float = 20.0
+    limit_crater_diameter_to_source_resolution: bool = True
     crater_density_scale: float = 1.0
     crater_max_count: int = 5000
     rock_min_diameter_m: float = 0.1
     rock_max_diameter_m: float = 2.0
-    rock_abundance_per_100m2: float = 0.234
+    rock_abundance_per_100m2: float = 0.014
     rock_density_scale: float = 1.0
-    rock_max_count: int = 2500
+    rock_max_count: int = 80000
     rock_sfd_exponent: float = 2.11
     rock_collision_cutoff_m: float = 0.1
     rock_height_ratio_mean: float = 0.60
     rock_height_ratio_std: float = 0.28
-    rock_shape_segments: int = 8
-    rock_shape_rings: int = 3
+    rock_small_shape_segments: int = 6
+    rock_large_shape_segments: int = 12
+    rock_small_shape_rings: int = 2
+    rock_large_shape_rings: int = 4
+    rock_detail_transition_diameter_m: float = 1.0
     rock_shape_irregularity: float = 0.12
     rock_embed_depth_m: float = 0.02
     rock_crater_probability: float = 0.65
     rock_crater_radius_factor: float = 2.0
     rock_crater_rim_width_factor: float = 0.25
-    terrain_texture_strength: float = 0.18
-    terrain_texture_scale_m: float = 35.0
+    terrain_texture_size: int = 2048
+    terrain_texture_tile_size_m: float = 8.0
+    terrain_texture_base: float = 0.72
+    terrain_texture_contrast: float = 0.14
+    terrain_material_base: float = 0.94
+    rock_material_base: float = 0.28
+    material_color_step: float = 0.04
     lighting: LightingConfig = field(default_factory=LightingConfig)
 
 
@@ -111,18 +120,12 @@ def load_config(path: Path, cli: dict[str, Any]) -> Config:
 def _validate_config(config: Config) -> None:
     if config.crop_size_m <= 0:
         raise ValueError("crop_size_m must be positive")
-    if config.visual_resolution_m <= 0:
-        raise ValueError("visual_resolution_m must be positive")
     if config.terrain_resolution_m <= 0:
         raise ValueError("terrain_resolution_m must be positive")
-    if config.terrain_resolution_m > config.visual_resolution_m:
-        raise ValueError("terrain resolution cannot be coarser than visual resolution")
-    if not 0 < config.collision_resolution_m:
-        raise ValueError("collision_resolution_m must be positive")
-    if config.collision_resolution_m < config.visual_resolution_m:
-        raise ValueError("collision resolution cannot be finer than visual resolution")
     if config.crater_max_count <= 0:
         raise ValueError("crater_max_count must be positive")
+    if config.rock_max_count <= 0:
+        raise ValueError("rock_max_count must be positive")
     if not 0 < config.crater_min_diameter_m <= config.crater_max_diameter_m:
         raise ValueError("invalid crater diameter range")
     if not 0 < config.rock_min_diameter_m <= config.rock_max_diameter_m:
@@ -133,12 +136,57 @@ def _validate_config(config: Config) -> None:
         raise ValueError("rock_collision_cutoff_m cannot be below rock_min_diameter_m")
     if config.rock_collision_cutoff_m > config.rock_max_diameter_m:
         raise ValueError("rock_collision_cutoff_m cannot exceed rock_max_diameter_m")
-    if config.rock_shape_segments < 6 or config.rock_shape_rings < 2:
-        raise ValueError("rock_shape_segments must be at least 6 and rock_shape_rings at least 2")
+    if config.rock_small_shape_segments < 6:
+        raise ValueError("rock_small_shape_segments must be at least 6")
+    if config.rock_large_shape_segments < config.rock_small_shape_segments:
+        raise ValueError(
+            "rock_large_shape_segments cannot be smaller than rock_small_shape_segments"
+        )
+    if config.rock_small_shape_rings < 2:
+        raise ValueError("rock_small_shape_rings must be at least 2")
+    if config.rock_large_shape_rings < config.rock_small_shape_rings:
+        raise ValueError(
+            "rock_large_shape_rings cannot be smaller than rock_small_shape_rings"
+        )
+    if not config.rock_min_diameter_m <= config.rock_detail_transition_diameter_m:
+        raise ValueError(
+            "rock_detail_transition_diameter_m cannot be below rock_min_diameter_m"
+        )
+    if config.rock_detail_transition_diameter_m > config.rock_max_diameter_m:
+        raise ValueError(
+            "rock_detail_transition_diameter_m cannot exceed rock_max_diameter_m"
+        )
     if not 0 <= config.rock_shape_irregularity < 0.5:
         raise ValueError("rock_shape_irregularity must be in [0, 0.5)")
     if config.rock_embed_depth_m < 0:
         raise ValueError("rock_embed_depth_m cannot be negative")
+    for name, value in (
+        ("terrain_material_base", config.terrain_material_base),
+        ("rock_material_base", config.rock_material_base),
+    ):
+        if not 0 <= value <= 1:
+            raise ValueError(f"{name} must be between 0 and 1")
+    if config.material_color_step < 0:
+        raise ValueError("material_color_step cannot be negative")
+    for name, value in (
+        ("lighting.intensity", config.lighting.intensity),
+        ("lighting.ambient", config.lighting.ambient),
+    ):
+        if not 0 <= value <= 1:
+            raise ValueError(f"{name} must be between 0 and 1 for Gazebo colors")
+    if config.terrain_texture_size < 2:
+        raise ValueError("terrain_texture_size must be at least 2")
+    if config.terrain_texture_tile_size_m <= 0:
+        raise ValueError("terrain_texture_tile_size_m must be positive")
+    if not 0 < config.terrain_texture_base < 1:
+        raise ValueError("terrain_texture_base must be between 0 and 1")
+    if config.terrain_texture_contrast < 0:
+        raise ValueError("terrain_texture_contrast cannot be negative")
+    for name, base in (("rock_material_base", config.rock_material_base),):
+        if base - 1.5 * config.material_color_step < 0:
+            raise ValueError(f"{name} and material_color_step produce a negative color")
+        if base + 1.5 * config.material_color_step > 1:
+            raise ValueError(f"{name} and material_color_step produce a color above 1")
     if not 0 <= config.rock_crater_probability <= 1:
         raise ValueError("rock_crater_probability must be between 0 and 1")
     if config.rock_crater_radius_factor <= 0:
@@ -254,10 +302,19 @@ def _sample_crater_diameters(
     return np.exp(sampled_log_diameter)
 
 
-def sample_craters(config: Config, rng: np.random.Generator) -> list[dict[str, float]]:
+def sample_craters(
+    config: Config,
+    rng: np.random.Generator,
+    max_diameter: float | None = None,
+) -> list[dict[str, float]]:
+    max_diameter = (
+        config.crater_max_diameter_m if max_diameter is None else max_diameter
+    )
+    if max_diameter <= config.crater_min_diameter_m:
+        return []
     area_km2 = (config.crop_size_m / 1000.0) ** 2
     density_min = _cumulative_density(config.crater_min_diameter_m)
-    density_max = _cumulative_density(config.crater_max_diameter_m)
+    density_max = _cumulative_density(max_diameter)
     expected = max(0.0, (density_min - density_max) * area_km2 * config.crater_density_scale)
     count = min(config.crater_max_count, int(rng.poisson(expected)))
     morphologies = (
@@ -274,7 +331,7 @@ def sample_craters(config: Config, rng: np.random.Generator) -> list[dict[str, f
         rng,
         count,
         config.crater_min_diameter_m,
-        config.crater_max_diameter_m,
+        max_diameter,
     )
     for diameter in diameters:
         diameter = float(diameter)
@@ -291,7 +348,7 @@ def sample_craters(config: Config, rng: np.random.Generator) -> list[dict[str, f
 
 
 def _expected_rock_count(config: Config, area_m2: float) -> float:
-    # Surveyor I SLS-DSNE abundance: 0.234 rocks >= 1 m / 100 m².
+    # Lowest SLS-DSNE abundance: 0.014 rocks >= 1 m / 100 m².
     abundance = (
         config.rock_abundance_per_100m2
         * area_m2
@@ -401,12 +458,9 @@ def apply_craters(
 
 
 def _mesh_grid(
-    elevation: np.ndarray, resolution: float, config: Config
+    elevation: np.ndarray, config: Config
 ) -> tuple[np.ndarray, np.ndarray]:
-    stride = max(1, int(round(resolution / config.terrain_resolution_m)))
-    sampled = elevation[::stride, ::stride]
-    if sampled[-1, -1] != elevation[-1, -1]:
-        sampled = np.pad(sampled, ((0, 1), (0, 1)), mode="edge")
+    sampled = elevation
     rows, cols = sampled.shape
     half = config.crop_size_m / 2
     xs = np.linspace(-half, half, cols)
@@ -424,17 +478,41 @@ def _mesh_grid(
     return vertices, np.asarray(faces, dtype=int)
 
 
-def _material_indices(vertices: np.ndarray, faces: np.ndarray, config: Config) -> np.ndarray:
-    if not len(faces):
-        return np.zeros(0, dtype=int)
-    centers = vertices[faces - 1].mean(axis=1)
-    texture = (
-        np.sin(centers[:, 0] / config.terrain_texture_scale_m)
-        + 0.55 * np.cos(centers[:, 1] / (config.terrain_texture_scale_m * 1.7))
-        + 0.25 * np.sin((centers[:, 0] + centers[:, 1]) / (config.terrain_texture_scale_m * 0.37))
+def _png_chunk(kind: bytes, data: bytes) -> bytes:
+    payload = kind + data
+    return struct.pack(">I", len(data)) + payload + struct.pack(">I", zlib.crc32(payload))
+
+
+def _write_regolith_texture(path: Path, config: Config, seed: int) -> None:
+    size = config.terrain_texture_size
+    rng = np.random.default_rng(seed)
+
+    # Generate white noise, then in frequency space dampen high frequencies using power law
+    white_noise = rng.standard_normal((size, size))
+    spectrum = np.fft.fft2(white_noise)
+    frequencies = np.fft.fftfreq(size)
+    frequency_x, frequency_y = np.meshgrid(frequencies, frequencies, indexing="xy")
+    radial_frequency = np.sqrt(frequency_x**2 + frequency_y**2)
+    minimum_frequency = 1.0 / size
+    spectral_falloff = (radial_frequency + minimum_frequency) ** -0.65
+    spectral_falloff[0, 0] = 0.0
+    texture = np.fft.ifft2(spectrum * spectral_falloff).real
+    texture += 0.20 * rng.standard_normal((size, size))
+    texture = (texture - texture.mean()) / max(texture.std(), np.finfo(float).eps)
+    texture = np.clip(
+        config.terrain_texture_base + config.terrain_texture_contrast * texture,
+        0.0,
+        1.0,
     )
-    scaled = texture * config.terrain_texture_strength
-    return np.clip(np.floor((scaled + 1.0) * 2.0), 0, 3).astype(int)
+    pixels = np.rint(texture * 255).astype(np.uint8)
+    scanlines = b"".join(b"\x00" + row.tobytes() for row in pixels)
+    png = (
+        b"\x89PNG\r\n\x1a\n"
+        + _png_chunk(b"IHDR", struct.pack(">IIBBBBB", size, size, 8, 0, 0, 0, 0))
+        + _png_chunk(b"IDAT", zlib.compress(scanlines, level=6))
+        + _png_chunk(b"IEND", b"")
+    )
+    path.write_bytes(png)
 
 
 def _write_obj(
@@ -442,6 +520,10 @@ def _write_obj(
     vertices: np.ndarray,
     faces: np.ndarray,
     material_indices: np.ndarray | None = None,
+    material_base: float = 0.42,
+    material_step: float = 0.053333,
+    texture_name: str | None = None,
+    texture_tile_size_m: float | None = None,
 ) -> None:
     material_indices = (
         np.zeros(len(faces), dtype=int) if material_indices is None else material_indices
@@ -466,16 +548,30 @@ def _write_obj(
         stream.write(f"mtllib {path.with_suffix('.mtl').name}\n")
         for x, y, z in vertices:
             stream.write(f"v {x:.5f} {y:.5f} {z:.5f}\n")
+        if texture_name:
+            x_min, x_max = vertices[:, 0].min(), vertices[:, 0].max()
+            y_min, y_max = vertices[:, 1].min(), vertices[:, 1].max()
+            tile_size = texture_tile_size_m or max(x_max - x_min, y_max - y_min)
+            for x, y, _ in vertices:
+                u = (x - x_min) / tile_size
+                v = (y - y_min) / tile_size
+                stream.write(f"vt {u:.7f} {v:.7f}\n")
         for nx, ny, nz in normals:
             stream.write(f"vn {nx:.7f} {ny:.7f} {nz:.7f}\n")
         for index, (a, b, c) in enumerate(faces):
             stream.write(f"usemtl lunar_surface_{material_indices[index]}\n")
-            stream.write(f"f {a}//{a} {b}//{b} {c}//{c}\n")
-    colors = (0.34, 0.39, 0.44, 0.50)
+            if texture_name:
+                stream.write(f"f {a}/{a}/{a} {b}/{b}/{b} {c}/{c}/{c}\n")
+            else:
+                stream.write(f"f {a}//{a} {b}//{b} {c}//{c}\n")
+    colors = (material_base,) if texture_name else tuple(
+        material_base + (index - 1.5) * material_step for index in range(4)
+    )
     path.with_suffix(".mtl").write_text(
         "".join(
             f"newmtl lunar_surface_{index}\nKd {color} {color} {color}\n"
-            "roughness 1.0\n\n"
+            + (f"map_Kd {texture_name}\n" if texture_name else "")
+            + "roughness 1.0\n\n"
             for index, color in enumerate(colors)
         ),
         encoding="utf-8",
@@ -506,8 +602,29 @@ def _rock_mesh(rocks: list[dict[str, float]], terrain: np.ndarray, config: Confi
         height = rock["height"]
         base_z = terrain_height(rock["x"], rock["y"])
         start = len(vertices) + 1
-        segments = config.rock_shape_segments
-        rings = config.rock_shape_rings
+        detail_fraction = (
+            (rock["diameter"] - config.rock_min_diameter_m)
+            / (
+                config.rock_detail_transition_diameter_m
+                - config.rock_min_diameter_m
+            )
+            if config.rock_detail_transition_diameter_m > config.rock_min_diameter_m
+            else 1.0
+        )
+        detail_fraction = float(np.clip(detail_fraction, 0.0, 1.0))
+        segments = round(
+            config.rock_small_shape_segments
+            + detail_fraction
+            * (
+                config.rock_large_shape_segments
+                - config.rock_small_shape_segments
+            )
+        )
+        rings = round(
+            config.rock_small_shape_rings
+            + detail_fraction
+            * (config.rock_large_shape_rings - config.rock_small_shape_rings)
+        )
         yaw = rock["yaw"]
         ring_count = rings + 1
         for ring in range(ring_count):
@@ -558,6 +675,7 @@ def _write_sdf(output: Path, config: Config) -> None:
   <world name="generated_lunar_world">
     <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>
     <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
+    <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
     <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors"><render_engine>ogre2</render_engine></plugin>
     <gravity>0 0 -1.62</gravity>
     <scene><ambient>{light.ambient} {light.ambient} {light.ambient} 1</ambient><background>0.01 0.01 0.01 1</background><shadows>true</shadows></scene>
@@ -571,7 +689,7 @@ def _write_sdf(output: Path, config: Config) -> None:
 </sdf>
 """
     (output / "world.sdf").write_text(world, encoding="utf-8")
-    terrain_model = """<?xml version="1.0"?><sdf version="1.7"><model name="terrain"><static>true</static><link name="terrain"><visual name="visual"><geometry><mesh><uri>file://{}/terrain_visual.obj</uri></mesh></geometry></visual><collision name="collision"><geometry><mesh><uri>file://{}/terrain_collision.obj</uri></mesh></geometry></collision></link></model></sdf>""".format(output.resolve(), output.resolve())
+    terrain_model = """<?xml version="1.0"?><sdf version="1.7"><model name="terrain"><static>true</static><link name="terrain"><visual name="visual"><geometry><mesh><uri>file://{}/terrain.obj</uri></mesh></geometry></visual><collision name="collision"><geometry><mesh><uri>file://{}/terrain.obj</uri></mesh></geometry></collision></link></model></sdf>""".format(output.resolve(), output.resolve())
     rocks_model = """<?xml version="1.0"?><sdf version="1.7"><model name="rocks"><static>true</static><link name="rocks"><visual name="visual"><geometry><mesh><uri>file://{}/rocks.obj</uri></mesh></geometry></visual><collision name="collision"><geometry><mesh><uri>file://{}/rocks.obj</uri></mesh></geometry></collision></link></model></sdf>""".format(output.resolve(), output.resolve())
     (output / "terrain_model.sdf").write_text(terrain_model, encoding="utf-8")
     (output / "rocks_model.sdf").write_text(rocks_model, encoding="utf-8")
@@ -585,34 +703,48 @@ def generate(config: Config) -> dict[str, Any]:
         shutil.rmtree(output)
     output.mkdir(parents=True)
     elevation, source_metadata = read_crop(config, rng)
+    source_resolution_m = min(source_metadata["source_resolution_m"])
+    effective_crater_max = config.crater_max_diameter_m
+    if config.limit_crater_diameter_to_source_resolution:
+        effective_crater_max = min(effective_crater_max, source_resolution_m)
     target_size = max(2, int(round(config.crop_size_m / config.terrain_resolution_m))) + 1
     elevation = _resample(elevation, target_size, target_size)
     smoothing_radius_pixels = int(
         round(config.smoothing_radius_m / config.terrain_resolution_m)
     )
     elevation = _smooth(elevation, smoothing_radius_pixels)
-    craters = sample_craters(config, rng)
+    craters = sample_craters(config, rng, effective_crater_max)
     elevation = apply_craters(elevation, config, craters)
     center_row = (elevation.shape[0] - 1) // 2
     center_col = (elevation.shape[1] - 1) // 2
     elevation += config.terrain_reference_z_m - elevation[center_row, center_col]
     rocks = sample_rocks(config, craters, rng)
-    visual_vertices, visual_faces = _mesh_grid(elevation, config.visual_resolution_m, config)
-    collision_vertices, collision_faces = _mesh_grid(elevation, config.collision_resolution_m, config)
+    terrain_vertices, terrain_faces = _mesh_grid(elevation, config)
+    texture_path = output / "terrain_regolith.png"
+    _write_regolith_texture(texture_path, config, config.seed)
     _write_obj(
-        output / "terrain_visual.obj", visual_vertices, visual_faces,
-        _material_indices(visual_vertices, visual_faces, config),
-    )
-    _write_obj(
-        output / "terrain_collision.obj", collision_vertices, collision_faces,
-        _material_indices(collision_vertices, collision_faces, config),
+        output / "terrain.obj",
+        terrain_vertices,
+        terrain_faces,
+        texture_name=texture_path.name,
+        texture_tile_size_m=config.terrain_texture_tile_size_m,
     )
     rock_vertices, rock_faces = _rock_mesh(rocks, elevation, config)
     if len(rock_vertices):
-        _write_obj(output / "rocks.obj", rock_vertices, rock_faces)
+        _write_obj(
+            output / "rocks.obj",
+            rock_vertices,
+            rock_faces,
+            material_base=config.rock_material_base,
+            material_step=config.material_color_step,
+        )
     else:
         _write_obj(
-            output / "rocks.obj", np.zeros((0, 3)), np.zeros((0, 3), dtype=int)
+            output / "rocks.obj",
+            np.zeros((0, 3)),
+            np.zeros((0, 3), dtype=int),
+            material_base=config.rock_material_base,
+            material_step=config.material_color_step,
         )
     _write_sdf(output, config)
     manifest = {
@@ -620,15 +752,17 @@ def generate(config: Config) -> dict[str, Any]:
         "seed": config.seed,
         "config": asdict(config),
         "source": source_metadata,
+        "crater_diameter_limit_m": effective_crater_max,
         "counts": {
             "craters": len(craters),
             "rocks": len(rocks),
             "expected_rocks_before_cap": _expected_rock_count(
                 config, config.crop_size_m ** 2
             ),
-            "lidar_collision_rocks": int(len(rock_vertices) / (
-                config.rock_shape_segments * (config.rock_shape_rings + 1) + 1
-            )),
+            "lidar_collision_rocks": sum(
+                rock["diameter"] >= config.rock_collision_cutoff_m
+                for rock in rocks
+            ),
         },
     }
     (output / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
@@ -643,23 +777,36 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--seed", type=int)
     parser.add_argument("--crop-size-m", type=float)
     parser.add_argument("--terrain-resolution-m", type=float)
-    parser.add_argument("--visual-resolution-m", type=float)
-    parser.add_argument("--collision-resolution-m", type=float)
     parser.add_argument("--smoothing-radius-m", type=float)
     parser.add_argument("--terrain-reference-z-m", type=float)
+    parser.add_argument("--terrain-texture-size", type=int)
+    parser.add_argument("--terrain-texture-tile-size-m", type=float)
     parser.add_argument("--crater-min-diameter-m", type=float)
     parser.add_argument("--crater-max-diameter-m", type=float)
+    parser.add_argument(
+        "--limit-crater-diameter-to-source-resolution",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="cap generated crater diameters at the finer source DEM pixel resolution",
+    )
     parser.add_argument("--rock-min-diameter-m", type=float)
     parser.add_argument("--rock-max-diameter-m", type=float)
+    parser.add_argument("--rock-max-count", type=int)
     parser.add_argument("--rock-abundance-per-100m2", type=float)
     parser.add_argument("--rock-sfd-exponent", type=float)
-    parser.add_argument("--rock-shape-segments", type=int)
-    parser.add_argument("--rock-shape-rings", type=int)
+    parser.add_argument("--rock-small-shape-segments", type=int)
+    parser.add_argument("--rock-large-shape-segments", type=int)
+    parser.add_argument("--rock-small-shape-rings", type=int)
+    parser.add_argument("--rock-large-shape-rings", type=int)
+    parser.add_argument("--rock-detail-transition-diameter-m", type=float)
     parser.add_argument("--rock-shape-irregularity", type=float)
     parser.add_argument("--rock-embed-depth-m", type=float)
     parser.add_argument("--rock-crater-probability", type=float)
     parser.add_argument("--rock-crater-radius-factor", type=float)
     parser.add_argument("--rock-crater-rim-width-factor", type=float)
+    parser.add_argument("--terrain-material-base", type=float)
+    parser.add_argument("--rock-material-base", type=float)
+    parser.add_argument("--material-color-step", type=float)
     parser.add_argument("--rock-collision-cutoff-m", type=float)
     return parser
 

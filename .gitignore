@@ -1,6 +1,7 @@
 build/
 install/
 log/
+src/lunar_env/worlds/
 .vscode/
 __pycache__/
 eval_scripts/

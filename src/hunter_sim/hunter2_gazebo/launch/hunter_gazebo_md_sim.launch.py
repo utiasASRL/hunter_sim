@@ -38,7 +38,7 @@ def add_robots(context, *args, **kwargs):
             launch_arguments={ 
                 'robot_name': f'robot{i}',
                 'robot_colour': COLORS[i % len(COLORS)],
-                'start_x': f'{(num_robots - 1 - i) * robot_offset}' 
+                'start_x': f'{(num_robots - 1 - i) * robot_offset}',
             }.items()
         ))
 
@@ -46,14 +46,6 @@ def add_robots(context, *args, **kwargs):
     return nodes_to_launch
 
 def generate_launch_description():
-
-    robot_count = DeclareLaunchArgument(
-        'num_robots', default_value="1"
-    )
-
-    robot_offset = DeclareLaunchArgument(
-        'robot_spacing', default_value="1"
-    )
 
     # 1. Paths and Definitions   
     hunter_base_pkg_share = get_package_share_directory('hunter2_base')
@@ -74,12 +66,29 @@ def generate_launch_description():
         value='1'
     )
 
+    robot_count = DeclareLaunchArgument(
+        'num_robots', default_value="1"
+    )
+
+    robot_offset = DeclareLaunchArgument(
+        'robot_spacing', default_value="1"
+    )
+
+    world_file = DeclareLaunchArgument(
+        'world',
+        default_value=os.path.join(
+            hunter_gazebo_pkg_share,
+            'world',
+            'mars_dome.world',
+        ),
+    )
+
     # 2. Start Gazebo
     gz_server = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(pkg_ros_gz_sim, 'launch', 'gz_sim.launch.py')
         ),
-        launch_arguments={'gz_args': f"-r {os.path.join(hunter_gazebo_pkg_share, 'world', 'mars_dome.world')}"}.items(),
+        launch_arguments={'gz_args': ['-r ', LaunchConfiguration('world')]}.items(),
     )
 
     base_bridge = Node(
@@ -97,6 +106,7 @@ def generate_launch_description():
     return LaunchDescription([
         robot_count,
         robot_offset,
+        world_file,
         set_local_host,
         add_hunter2_base_path,
         add_hunter2_gazebo_path,
